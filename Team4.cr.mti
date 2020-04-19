@@ -1,0 +1,63 @@
+C:/Users/Kamel/Desktop/Harvard_Arch_Processor/INT_UNIT.vhd {1 {vcom -work work -2002 -explicit -stats=none {C:\Users\Kamel\Desktop\Harvard_Arch_Processor\INT_UNIT.vhd}
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity INT_UNIT
+-- Compiling architecture INT of INT_UNIT
+
+} {} {}} C:/Users/Kamel/Desktop/Harvard_Arch_Processor/HALF_ADDER.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/Kamel/Desktop/Harvard_Arch_Processor/HALF_ADDER.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package STD_LOGIC_UNSIGNED
+-- Compiling entity HALF_ADDER
+-- Compiling architecture ADD of HALF_ADDER
+
+} {} {}} C:/Users/Kamel/Desktop/Harvard_Arch_Processor/FULL_ADDER.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/Kamel/Desktop/Harvard_Arch_Processor/FULL_ADDER.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package STD_LOGIC_UNSIGNED
+-- Compiling entity FULL_ADDER
+-- Compiling architecture ADD of FULL_ADDER
+
+} {} {}} C:/Users/Kamel/Desktop/Harvard_Arch_Processor/INSTRUCTION_MEMORY.vhd {2 {vcom -work work -2002 -explicit -stats=none C:/Users/Kamel/Desktop/Harvard_Arch_Processor/INSTRUCTION_MEMORY.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity sync_ram
+-- Compiling architecture RTL of sync_ram
+** Warning: C:/Users/Kamel/Desktop/Harvard_Arch_Processor/INSTRUCTION_MEMORY.vhd(17): (vcom-1158) Integer exponentiation has overflowed; result is -2147483648.
+
+} {} {}} C:/Users/Kamel/Desktop/Harvard_Arch_Processor/BITFF.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/Kamel/Desktop/Harvard_Arch_Processor/BITFF.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity bitFF
+-- Compiling architecture ModelBitFF of bitFF
+
+} {} {}} C:/Users/Kamel/Desktop/Harvard_Arch_Processor/PROGRAM_COUNTER.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/Kamel/Desktop/Harvard_Arch_Processor/PROGRAM_COUNTER.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity REG
+-- Compiling architecture PC of REG
+
+} {} {}} C:/Users/Kamel/Desktop/Harvard_Arch_Processor/MUX2x1.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/Kamel/Desktop/Harvard_Arch_Processor/MUX2x1.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity MUX2x1
+-- Compiling architecture Mux of MUX2x1
+
+} {} {}}

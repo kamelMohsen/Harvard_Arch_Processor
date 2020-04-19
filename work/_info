@@ -1,0 +1,375 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dC:/Users/Kamel/Desktop/Spring 2020/Architecture/Labs/Lab05/Solution
+Eadder
+w1587154829
+Z0 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z1 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Z2 dC:/Users/Kamel/Desktop/Harvard_Arch_Processor
+8C:\Users\Kamel\Desktop\Harvard_Arch_Processor\ADDER.vhd
+FC:\Users\Kamel\Desktop\Harvard_Arch_Processor\ADDER.vhd
+l0
+L4
+V<lh2SX@UO?Za>h=1ko=SU2
+!s100 ^[R9c8`GlDGHLB>2F]D>?3
+Z3 OV;C;10.5b;63
+32
+!s110 1587154832
+!i10b 1
+!s108 1587154831.000000
+!s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:\Users\Kamel\Desktop\Harvard_Arch_Processor\ADDER.vhd|
+!s107 C:\Users\Kamel\Desktop\Harvard_Arch_Processor\ADDER.vhd|
+!i113 1
+Z4 o-work work -2002 -explicit
+Z5 tExplicit 1 CvgOpt 0
+Ebitff
+Z6 w1587155927
+R0
+R1
+R2
+Z7 8C:/Users/Kamel/Desktop/Harvard_Arch_Processor/BITFF.vhd
+Z8 FC:/Users/Kamel/Desktop/Harvard_Arch_Processor/BITFF.vhd
+l0
+L4
+V4iL1gHLc`IOnW<NAm?1Zo3
+!s100 WKj8W8XA^5e6X]Pk`ReNM2
+R3
+32
+Z9 !s110 1587314288
+!i10b 1
+Z10 !s108 1587314288.000000
+Z11 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/Kamel/Desktop/Harvard_Arch_Processor/BITFF.vhd|
+Z12 !s107 C:/Users/Kamel/Desktop/Harvard_Arch_Processor/BITFF.vhd|
+!i113 1
+R4
+R5
+Amodelbitff
+R0
+R1
+DEx4 work 5 bitff 0 22 4iL1gHLc`IOnW<NAm?1Zo3
+l11
+L10
+VR<VGB6K@ddESh`eCW6;BM2
+!s100 c@A>h]Dbk>>=]`]Ud=Y0k1
+R3
+32
+R9
+!i10b 1
+R10
+R11
+R12
+!i113 1
+R4
+R5
+Efull_adder
+Z13 w1587155397
+Z14 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
+Z15 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
+R0
+R1
+R2
+Z16 8C:/Users/Kamel/Desktop/Harvard_Arch_Processor/FULL_ADDER.vhd
+Z17 FC:/Users/Kamel/Desktop/Harvard_Arch_Processor/FULL_ADDER.vhd
+l0
+L6
+V;TXz4D2n4[73=Yi9@_0Zm2
+!s100 jzL[fA8mQ;J4`j4:azj?:1
+R3
+32
+R9
+!i10b 1
+Z18 !s108 1587314287.000000
+Z19 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/Kamel/Desktop/Harvard_Arch_Processor/FULL_ADDER.vhd|
+Z20 !s107 C:/Users/Kamel/Desktop/Harvard_Arch_Processor/FULL_ADDER.vhd|
+!i113 1
+R4
+R5
+Aadd
+R14
+R15
+R0
+R1
+DEx4 work 10 full_adder 0 22 ;TXz4D2n4[73=Yi9@_0Zm2
+l21
+L16
+VJnI2Fb^idLH9]z9DBi3:M3
+!s100 m;LSRUkF?;mm0R;MVlDoh3
+R3
+32
+R9
+!i10b 1
+R18
+R19
+R20
+!i113 1
+R4
+R5
+Ehalf_adder
+Z21 w1587155077
+R14
+R15
+R0
+R1
+R2
+Z22 8C:/Users/Kamel/Desktop/Harvard_Arch_Processor/HALF_ADDER.vhd
+Z23 FC:/Users/Kamel/Desktop/Harvard_Arch_Processor/HALF_ADDER.vhd
+l0
+L6
+VCE1NUUWA>7d^VHd19zDbG0
+!s100 IWBAiloIflG3kl`HOjc1G1
+R3
+32
+Z24 !s110 1587314287
+!i10b 1
+R18
+Z25 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/Kamel/Desktop/Harvard_Arch_Processor/HALF_ADDER.vhd|
+Z26 !s107 C:/Users/Kamel/Desktop/Harvard_Arch_Processor/HALF_ADDER.vhd|
+!i113 1
+R4
+R5
+Aadd
+R14
+R15
+R0
+R1
+DEx4 work 10 half_adder 0 22 CE1NUUWA>7d^VHd19zDbG0
+l12
+L11
+V=45WjJ]T`JlKG2hU92PWm0
+!s100 SQELLbh3[Q4<AdiLZI3Wb2
+R3
+32
+R24
+!i10b 1
+R18
+R25
+R26
+!i113 1
+R4
+R5
+Eint_unit
+Z27 w1587314261
+R0
+R1
+R2
+Z28 8C:\Users\Kamel\Desktop\Harvard_Arch_Processor\INT_UNIT.vhd
+Z29 FC:\Users\Kamel\Desktop\Harvard_Arch_Processor\INT_UNIT.vhd
+l0
+L4
+VKT3b_dX^hODg8AoiE5Gnf3
+!s100 O<40b@=fI7FUe8]D[@F;l2
+R3
+32
+R9
+!i10b 1
+R10
+Z30 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:\Users\Kamel\Desktop\Harvard_Arch_Processor\INT_UNIT.vhd|
+Z31 !s107 C:\Users\Kamel\Desktop\Harvard_Arch_Processor\INT_UNIT.vhd|
+!i113 1
+R4
+R5
+Aint
+R0
+R1
+Z32 DEx4 work 8 int_unit 0 22 KT3b_dX^hODg8AoiE5Gnf3
+l16
+L13
+Z33 VKKC4jFGL334<GXd`a3ZFR2
+Z34 !s100 PGjeoIIkdFMAS9ASbJEbO2
+R3
+32
+R9
+!i10b 1
+R10
+R30
+R31
+!i113 1
+R4
+R5
+Emux2x1
+Z35 w1587151474
+R0
+R1
+R2
+Z36 8C:/Users/Kamel/Desktop/Harvard_Arch_Processor/MUX2x1.vhd
+Z37 FC:/Users/Kamel/Desktop/Harvard_Arch_Processor/MUX2x1.vhd
+l0
+L4
+Vz=HP=2lEohdWhb3HX8o@Z2
+!s100 lFDl[3c^UOH>nQGEz]HY81
+R3
+32
+R24
+!i10b 1
+R18
+Z38 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/Kamel/Desktop/Harvard_Arch_Processor/MUX2x1.vhd|
+Z39 !s107 C:/Users/Kamel/Desktop/Harvard_Arch_Processor/MUX2x1.vhd|
+!i113 1
+R4
+R5
+Amux
+R0
+R1
+DEx4 work 6 mux2x1 0 22 z=HP=2lEohdWhb3HX8o@Z2
+l14
+L13
+V_>M?X>RQ7A2<6T?dz4cz>0
+!s100 bMfY[Cn9TCfIFXn?^24_]2
+R3
+32
+R24
+!i10b 1
+R18
+R38
+R39
+!i113 1
+R4
+R5
+Enbitff
+Z40 w1587155973
+R0
+R1
+R2
+Z41 8C:\Users\Kamel\Desktop\Harvard_Arch_Processor\PROGRAMCOUNTER.vhd
+Z42 FC:\Users\Kamel\Desktop\Harvard_Arch_Processor\PROGRAMCOUNTER.vhd
+l0
+L4
+V><IZU6TV1SzQefC?nI9>40
+!s100 6:4IOBW4kP>a>ciT23SU10
+R3
+32
+Z43 !s110 1587155976
+!i10b 1
+Z44 !s108 1587155976.000000
+Z45 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:\Users\Kamel\Desktop\Harvard_Arch_Processor\PROGRAMCOUNTER.vhd|
+Z46 !s107 C:\Users\Kamel\Desktop\Harvard_Arch_Processor\PROGRAMCOUNTER.vhd|
+!i113 1
+R4
+R5
+Amodelnbitff
+R0
+R1
+DEx4 work 6 nbitff 0 22 ><IZU6TV1SzQefC?nI9>40
+l22
+L14
+VQiZ@B[OMc7S9V22gV[SD<2
+!s100 ]Mjf7VCl`3^fUV]149R7X3
+R3
+32
+R43
+!i10b 1
+R44
+R45
+R46
+!i113 1
+R4
+R5
+Eram
+w1587156733
+Z47 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+R0
+R1
+R2
+8C:\Users\Kamel\Desktop\Harvard_Arch_Processor\INSTRUCTION_MEMORY.vhd
+FC:\Users\Kamel\Desktop\Harvard_Arch_Processor\INSTRUCTION_MEMORY.vhd
+l0
+L5
+V8IebETfb1B7L=WJQH6IkJ2
+!s100 F;<7K=MC71]e1o[AHN:jF2
+R3
+32
+!s110 1587156734
+!i10b 1
+!s108 1587156734.000000
+!s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:\Users\Kamel\Desktop\Harvard_Arch_Processor\INSTRUCTION_MEMORY.vhd|
+!s107 C:\Users\Kamel\Desktop\Harvard_Arch_Processor\INSTRUCTION_MEMORY.vhd|
+!i113 1
+R4
+R5
+Ereg
+Z48 w1587156224
+R0
+R1
+R2
+Z49 8C:/Users/Kamel/Desktop/Harvard_Arch_Processor/PROGRAM_COUNTER.vhd
+Z50 FC:/Users/Kamel/Desktop/Harvard_Arch_Processor/PROGRAM_COUNTER.vhd
+l0
+L4
+VFdoFb@FU>jfKQdG16Hd8S3
+!s100 T=kz59?gc@zJc[WdPi_nk0
+R3
+32
+R9
+!i10b 1
+R10
+Z51 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/Kamel/Desktop/Harvard_Arch_Processor/PROGRAM_COUNTER.vhd|
+Z52 !s107 C:/Users/Kamel/Desktop/Harvard_Arch_Processor/PROGRAM_COUNTER.vhd|
+!i113 1
+R4
+R5
+Apc
+R0
+R1
+DEx4 work 3 reg 0 22 FdoFb@FU>jfKQdG16Hd8S3
+l22
+L14
+VCiVZdK=6k5EXZ>]U2cB]A1
+!s100 2]zg<c<6omE?1I]ZzObfb3
+R3
+32
+R9
+!i10b 1
+R10
+R51
+R52
+!i113 1
+R4
+R5
+Esync_ram
+Z53 w1587157172
+R47
+R0
+R1
+R2
+Z54 8C:/Users/Kamel/Desktop/Harvard_Arch_Processor/INSTRUCTION_MEMORY.vhd
+Z55 FC:/Users/Kamel/Desktop/Harvard_Arch_Processor/INSTRUCTION_MEMORY.vhd
+l0
+L5
+VCicAL:gQ5_hS:gCd[Yd_a1
+!s100 J15`<5:=TX?d7:XZI^_D_1
+R3
+32
+R9
+!i10b 1
+R10
+Z56 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/Kamel/Desktop/Harvard_Arch_Processor/INSTRUCTION_MEMORY.vhd|
+Z57 !s107 C:/Users/Kamel/Desktop/Harvard_Arch_Processor/INSTRUCTION_MEMORY.vhd|
+!i113 1
+R4
+R5
+Artl
+R47
+R0
+R1
+DEx4 work 8 sync_ram 0 22 CicAL:gQ5_hS:gCd[Yd_a1
+l21
+L15
+VJNf_>;ZYbZBkm9QG43X620
+!s100 <P68m`H0fTWLYWVH1Q0Lh2
+R3
+32
+R9
+!i10b 1
+R10
+R56
+R57
+!i113 1
+R4
+R5
