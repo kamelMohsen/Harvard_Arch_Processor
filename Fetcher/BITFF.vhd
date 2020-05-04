@@ -1,4 +1,4 @@
-
+LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 
 ENTITY	bitFF IS
@@ -14,7 +14,7 @@ BEGIN
 		IF (rst = '1') THEN 
 			q <= '0';
 		ELSIF clk'event and clk = '1' THEN
-			IF enable ='1' THEN
+			IF enable ='0' THEN
 				q<=d;
 			END IF;
 		END IF;
