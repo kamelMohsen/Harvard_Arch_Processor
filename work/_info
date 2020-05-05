@@ -1,0 +1,51 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dC:/intelFPGA/19.1
+Ealu
+Z0 w1588550361
+Z1 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+Z2 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z3 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Z4 dC:/Users/ahmad/Desktop/Archi Project/Harvard_Arch_Processor
+Z5 8C:\Users\ahmad\Desktop\Archi Project\Harvard_Arch_Processor\ALU.vhd
+Z6 FC:\Users\ahmad\Desktop\Archi Project\Harvard_Arch_Processor\ALU.vhd
+l0
+L5
+VekUYVmhXCKIl=1IUEg_X>2
+!s100 VVL>`zj?jm>oEJ=U?fn6j1
+Z7 OV;C;10.5b;63
+32
+Z8 !s110 1588550365
+!i10b 1
+Z9 !s108 1588550365.000000
+Z10 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:\Users\ahmad\Desktop\Archi Project\Harvard_Arch_Processor\ALU.vhd|
+Z11 !s107 C:\Users\ahmad\Desktop\Archi Project\Harvard_Arch_Processor\ALU.vhd|
+!i113 1
+Z12 o-work work -2002 -explicit
+Z13 tExplicit 1 CvgOpt 0
+Aarch1
+R1
+R2
+R3
+Z14 DEx4 work 3 alu 0 22 ekUYVmhXCKIl=1IUEg_X>2
+l17
+L15
+VYlb3V3HGA7jC[D>h1:Il`2
+!s100 V`7[8kHO7`dMY2:K^YfNz3
+R7
+32
+R8
+!i10b 1
+R9
+R10
+R11
+!i113 1
+R12
+R13
