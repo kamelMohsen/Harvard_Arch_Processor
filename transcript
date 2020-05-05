@@ -1,0 +1,18 @@
+# Compile of ZeroExtender.vhd was successful.
+# Compile of ZeroExtender.vhd was successful.
+vsim -gui work.zeroextender
+# vsim -gui work.zeroextender 
+# Start time: 23:03:03 on May 05,2020
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading work.zeroextender(arch1)
+add wave sim:/zeroextender/*
+force -freeze sim:/zeroextender/INST 4'h01 0
+run
+run
+run
+run
+quit -sim
+# End time: 23:06:40 on May 05,2020, Elapsed time: 0:03:37
+# Errors: 0, Warnings: 0
