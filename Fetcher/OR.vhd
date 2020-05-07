@@ -10,6 +10,6 @@ END ENTITY ORR;
 
 ARCHITECTURE ORING OF ORR IS
 BEGIN
-	Output0 <= '1' WHEN Input0 ='1' OR Input0 ='1'  
+	Output0 <= '1' WHEN Input0 ='1' OR Input1 ='1'  
 	ELSE '0' ;             
 END ORING;
