@@ -10,8 +10,9 @@ ENTITY ALU IS PORT(
     ALU_Sel: IN std_logic_vector(3 DOWNTO 0);   	-- Operation Selector
     Stall: IN std_logic; 				-- Stall --NOT IMPLEMENTED YET
     Zero, Carry, Negative: OUT std_logic;		--FLAGS
-    Result: OUT std_logic_vector(31 DOWNTO 0)		--Output
-);
+    Result: OUT std_logic_vector(31 DOWNTO 0);		--Output
+    FlagsRegisterEnable: OUT std_logic
+    );
 END ENTITY ALU; 
 
 ARCHITECTURE arch1 OF ALU IS 
@@ -29,12 +30,14 @@ begin
     ELSE std_logic_vector(shift_left(unsigned(Rsrc1), to_integer(unsigned(Instr)))) WHEN ALU_SEL = "1001" 	--Shift left Source1 by Instr bits
     ELSE std_logic_vector(shift_right(unsigned(Rsrc1), to_integer(unsigned(Instr)))) WHEN ALU_SEL = "1010" 	--Shift Right Source1 by Instr bits
     ELSE Rsrc2 WHEN ALU_SEL = "1011"; --pass Source2
-Zero <= '1' WHEN tempOut = "00000000000000000000000000000000" AND ALU_SEL /= "0000" 	--if the ALU is not disabled and the result of the operation is zero, set the zero flag.
-ELSE '0';
-Negative <= '1' WHEN tempOut(31) = '1' 	--set Negative flag if the most significant bit of the result is 1
-ELSE '0';
---Carry <= '1' WHEN  tempOut(32) = '1'
---ELSE '0';	--NEEDS IMPLEMENTATION
-Result <= tempOut; --set the result to tempOut
+    Zero <= '1' WHEN tempOut = "00000000000000000000000000000000" AND ALU_SEL /= "0000" 	--if the ALU is not disabled and the result of the operation is zero, set the zero flag.
+    ELSE '0';
+    Negative <= '1' WHEN tempOut(31) = '1' AND ALU_SEL /= "0000" 	--set Negative flag if the most significant bit of the result is 1
+    ELSE '0' WHEN ALU_SEL /= "0000"; 
+    FlagsRegisterEnable <= '0' when ALU_SEL = "0000"
+    ELSE '1';
+    Carry <= '1' WHEN  tempOut(32) = '1';
+    --ELSE '0';	--NEEDS IMPLEMENTATION
+    Result <= tempOut; --set the result to tempOut
     
 END arch1;

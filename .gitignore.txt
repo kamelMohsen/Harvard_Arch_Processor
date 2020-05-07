@@ -1,0 +1,6 @@
+.DS_Store
+*.vhd.bak
+*.cr.mti
+*.mpf
+transcript
+*.wlf

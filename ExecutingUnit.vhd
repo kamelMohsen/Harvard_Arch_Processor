@@ -15,8 +15,7 @@ Sixteen_ThirtyOne:IN std_logic_vector(16 DOWNTO 0)
 
 ARCHITECTURE exec OF ExecutingUnit IS 
 BEGIN
-DirectOrForward1
-DirectOrForward2
+
 
 
 END exec;

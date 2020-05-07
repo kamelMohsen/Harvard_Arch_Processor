@@ -1,18 +1,55 @@
-# Compile of ZeroExtender.vhd was successful.
-# Compile of ZeroExtender.vhd was successful.
-vsim -gui work.zeroextender
-# vsim -gui work.zeroextender 
-# Start time: 23:03:03 on May 05,2020
+# Compile of FlagsRegister.vhd failed with 5 errors.
+# Compile of FlagsRegister.vhd failed with 4 errors.
+# Compile of FlagsRegister.vhd failed with 3 errors.
+# Compile of FlagsRegister.vhd failed with 4 errors.
+# Compile of FlagsRegister.vhd was successful.
+vsim -gui work.flagsregister
+# vsim -gui work.flagsregister 
+# Start time: 01:39:00 on May 08,2020
 # Loading std.standard
 # Loading std.textio(body)
 # Loading ieee.std_logic_1164(body)
-# Loading work.zeroextender(arch1)
-add wave sim:/zeroextender/*
-force -freeze sim:/zeroextender/INST 4'h01 0
-run
-run
-run
-run
+# Loading work.flagsregister(arch1)
+# ** Warning: (vsim-3473) Component instance "Flag_Reg : my_DFF" is not bound.
+#    Time: 0 ps  Iteration: 0  Instance: /flagsregister File: C:/Users/ahmad/Desktop/Archi Project/Harvard_Arch_Processor/FlagsRegister.vhd
 quit -sim
-# End time: 23:06:40 on May 05,2020, Elapsed time: 0:03:37
-# Errors: 0, Warnings: 0
+# End time: 01:39:44 on May 08,2020, Elapsed time: 0:00:44
+# Errors: 0, Warnings: 1
+# Compile of DFlipFlop.vhd was successful.
+# Compile of FlagsRegister.vhd was successful.
+vsim -gui work.flagsregister
+# vsim -gui work.flagsregister 
+# Start time: 01:40:42 on May 08,2020
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading work.flagsregister(arch1)
+# Loading work.my_dff(a_my_dff)
+add wave -position insertpoint sim:/flagsregister/*
+force -freeze sim:/flagsregister/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/flagsregister/ZeroInput 1 0
+force -freeze sim:/flagsregister/NegativeInput 1 0
+force -freeze sim:/flagsregister/CarryInput U 0
+force -freeze sim:/flagsregister/CarryInput 1 0
+force -freeze sim:/flagsregister/SETC 00 0
+force -freeze sim:/flagsregister/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/flagsregister/rst 0 0
+force -freeze sim:/flagsregister/ZeroReset 0 0
+force -freeze sim:/flagsregister/CarryReset 0 0
+force -freeze sim:/flagsregister/NegativeReset 0 0
+force -freeze sim:/flagsregister/MemoryInput 0000 0
+run
+force -freeze sim:/flagsregister/NegativeInput 0 0
+run
+force -freeze sim:/flagsregister/CarryInput 0 0
+run
+run
+force -freeze sim:/flagsregister/ZeroInput 0 0
+run
+run
+force -freeze sim:/flagsregister/SETC 01 0
+run
+force -freeze sim:/flagsregister/SETC 10 0
+run
+run
+force -freeze sim:/flagsregister/SETC 00 0

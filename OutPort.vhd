@@ -10,5 +10,5 @@ output: OUT std_logic_vector(31 DOWNTO 0)
 ARCHITECTURE OutPort1 of OutPort IS 
 BEGIN
 output <= input when sel = "1"
-else (Others => "1") when sel = "0";
-END OutPort1;
+else (Others => "z") when sel = "0";
+END OutPort;
