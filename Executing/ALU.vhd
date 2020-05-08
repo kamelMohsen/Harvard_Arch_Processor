@@ -36,7 +36,7 @@ begin
     ELSE '0' WHEN ALU_SEL /= "0000"; 
     FlagsRegisterEnable <= '0' when ALU_SEL = "0000"
     ELSE '1';
-    Carry <= '1' WHEN  tempOut(32) = '1';
+    --Carry <= '1' WHEN  tempOut(32) = '1';
     --ELSE '0';	--NEEDS IMPLEMENTATION
     Result <= tempOut; --set the result to tempOut
     

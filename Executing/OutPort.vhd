@@ -6,9 +6,10 @@ sel: IN std_logic;
 input: IN std_logic_vector(31 DOWNTO 0);
 output: OUT std_logic_vector(31 DOWNTO 0)
 );
+END ENTITY OutPort;
 
 ARCHITECTURE OutPort1 of OutPort IS 
 BEGIN
-output <= input when sel = "1"
-else (Others => "z") when sel = "0";
-END OutPort;
+output <= input when sel = '1'
+else (Others => 'Z') when sel = '1';
+END OutPort1;
