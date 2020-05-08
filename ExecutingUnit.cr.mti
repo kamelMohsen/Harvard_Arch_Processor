@@ -1,9 +1,0 @@
-{C:/Users/ahmad/Desktop/Archi Project/Harvard_Arch_Processor/ZeroExtender.vhd} {1 {vcom -work work -2002 -explicit -stats=none {C:/Users/ahmad/Desktop/Archi Project/Harvard_Arch_Processor/ZeroExtender.vhd}
-Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Compiling entity ZeroExtender
--- Compiling architecture arch1 of ZeroExtender
-
-} {} {}}
