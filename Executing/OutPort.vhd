@@ -11,5 +11,5 @@ END ENTITY OutPort;
 ARCHITECTURE OutPort1 of OutPort IS 
 BEGIN
 output <= input when sel = '1'
-else (Others => 'Z') when sel = '1';
+else (Others => 'Z') when sel = '0';
 END OutPort1;

@@ -6,7 +6,7 @@ firstInput: IN std_logic;
 secondInput: IN std_logic;
 thirdInput:  IN std_logic;
 fourthInput: IN std_logic;
-output: OUT std_logic
+output1: OUT std_logic
 
 
 );
@@ -14,5 +14,5 @@ END ENTITY;
 
 ARCHITECTURE fourOr of FourInputOr IS
 BEGIN
-output <= firstInput or secondInput or thirdInput or fourthInput;
+output1 <= firstInput or secondInput or thirdInput or fourthInput;
 END fourOr;

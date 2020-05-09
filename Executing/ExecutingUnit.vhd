@@ -4,6 +4,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 ENTITY ExecutingUnit IS PORT(
 
 ------------------------------------INPUT--------------------------------------------------
+--An output from the buffer should be going to the fetch stage
 --Buffer Outputs
 
 PC: IN std_logic_vector(31 DOWNTO 0);
@@ -16,7 +17,7 @@ SETC: IN std_logic_vector(1 DOWNTO 0);
 OutPortSel: IN  std_logic;
 ALUSel: IN std_logic_vector(3 DOWNTO 0);
 M3_Sel, M4_Sel: IN std_logic;
-AND_INPUT1,AND_INPUT2,AND_INPUT3,AND_INPUT4: IN std_logic; 
+AND_INPUT1,AND_INPUT2,AND_INPUT3: IN std_logic; 
 Solo_Or_Input: IN std_logic;
 
 
@@ -119,7 +120,7 @@ firstInput: IN std_logic;
 secondInput: IN std_logic;
 thirdInput:  IN std_logic;
 fourthInput: IN std_logic;
-output: OUT std_logic
+output1: OUT std_logic
 );
 END COMPONENT;
 
@@ -130,7 +131,7 @@ SIGNAL FROut: std_logic_vector(3 DOWNTO 0);
 SIGNAL And1_Out, And2_Out, And3_Out: std_logic;
 BEGIN
 
-Ext: ZeroExtender PORT MAP(Sixteen_ThirtyOne, ZeroExtendedSignal);
+Ext: ZeroExtender PORT MAP(Sixteen_ThirtyOne, ZeroExtendedSignal, Extender);
 
 FR1: FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, FlagsRegisterReset, ZeroReset, CarryReset, NegativeReset, MemoryInput, FROut);
 
@@ -138,7 +139,7 @@ Outport1: OutPort PORT MAP(OutPortSel, M1Output, OutPort_Output);
 
 Mux1: MUX2x1 PORT MAP(Read1, FWUOUTPUT1 , M1_Sel, M1Output);
 Mux2: MUX2x1 PORT MAP(Read2, FWUOUTPUT2 , M2_Sel, M2Output);
-Mux3: MUX2x1 PORT MAP(M1Output, PC, M3_Sel, M3Output);
+Mux3: MUX2x1 PORT MAP(PC, M1Output, M3_Sel, M3Output);
 Mux4: MUX2x1 PORT MAP(M2Output, ZeroExtendedSignal, M4_Sel, M4Output);
 
 ALU1: ALU PORT MAP(M3Output, M4Output, Zero_Four, ALUSel, '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut);
@@ -146,9 +147,11 @@ Six_Eight_OUT <= Six_Eight_IN;
 Three_Eight_OUT <= Three_Eight;
 Zero_Two_OUT <= Zero_Two_IN;
 Swap_Output <= M2Output;
+FlagsRegisterOut <= FROut;
 and1: TwoInputAnd PORT MAP(FROut(0), AND_INPUT1, And1_Out);
 and2: TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);
 and3: TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);
+
 or1: FourInputOr PORT MAP(And1_Out, And2_Out, And3_Out, Solo_Or_Input, Or_Output);
 END exec;
 

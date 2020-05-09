@@ -10,5 +10,5 @@ END ENTITY ZeroExtender;
 ARCHITECTURE arch1 OF ZeroExtender IS 
 begin
     BufferOut <= "0000000000000000" & INST;
-    AluOut <= "0000000000000000" & INST;
+    AluOut    <= "0000000000000000" & INST;
 end arch1;
