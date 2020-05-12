@@ -3,17 +3,17 @@ USE IEEE.std_logic_1164.all;
 
 
 
-ENTITY FORWARDING IS PORT 
+ENTITY Execute_FWU IS PORT 
 (
     MEM_Destination_Address,WB_Destination_Address,EX_Destination_Address: IN std_logic_vector(2 DOWNTO 0);
     MEM_Destination_Data,WB_Destination_Data : IN std_logic_vector(31 DOWNTO 0);
     FW_Data : OUT std_logic_vector(31 DOWNTO 0);
     FW_Enable: OUT std_logic
 );
-END ENTITY FORWARDING;
+END ENTITY Execute_FWU;
 
 
-ARCHITECTURE FWU OF FORWARDING IS
+ARCHITECTURE Execute_FWU_ARCH OF Execute_FWU IS
     BEGIN
 
     
@@ -26,4 +26,4 @@ ARCHITECTURE FWU OF FORWARDING IS
 
 
 
-END FWU;
+END Execute_FWU_ARCH;

@@ -1,15 +1,15 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
-Entity TwoInputAnd IS PORT (
+Entity Execute_TwoInputAnd IS PORT (
 firstInput: IN std_logic;
 secondInput: IN std_logic;
 output: OUT std_logic
 );
-END ENTITY TwoInputAnd;
+END ENTITY Execute_TwoInputAnd;
 
 
-Architecture and1 of TwoInputAnd IS 
+Architecture Execute_TwoInputAnd_ARCH of Execute_TwoInputAnd IS 
 BEGIN
 output <= firstInput AND secondInput;
-END and1;
+END Execute_TwoInputAnd_ARCH;

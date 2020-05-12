@@ -1,10 +1,10 @@
---This file is missing: 1- Carry Flag
---                      2- Stall 
+--This file is missing:
+--Stall 
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.numeric_std.all;
 
-ENTITY ALU IS PORT(
+ENTITY Execute_ALU IS PORT(
     Rsrc1, Rsrc2: IN std_logic_vector( 31 DOWNTO 0);    --Source1 and Source2
     Instr: IN std_logic_vector( 4 DOWNTO 0);    	--Shift Amount
     ALU_Sel: IN std_logic_vector(3 DOWNTO 0);   	-- Operation Selector
@@ -13,9 +13,9 @@ ENTITY ALU IS PORT(
     Result: OUT std_logic_vector(31 DOWNTO 0);		--Output
     FlagsRegisterEnable: OUT std_logic
     );
-END ENTITY ALU; 
+END ENTITY Execute_ALU; 
 
-ARCHITECTURE arch1 OF ALU IS 
+ARCHITECTURE Execute_ALU_ARCH OF Execute_ALU IS 
 SIGNAL tempOut: std_logic_vector(32 DOWNTO 0);
 SIGNAL Rsrc1Signal: std_logic_vector(32 DOWNTO 0);-- := '0' & Rsrc1;
 SIGNAL Rsrc2Signal: std_logic_vector(32 DOWNTO 0);--:= '0' & Rsrc2;
@@ -44,4 +44,4 @@ begin
     ELSE '0';	
     Result <= tempOut(31 DOWNTO 0); --set the result to tempOut
     
-END arch1;
+END Execute_ALU_ARCH;

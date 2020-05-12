@@ -1,7 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 --Remember popping flags from the memory might need write enable
-ENTITY FlagsRegister IS PORT 
+ENTITY Execute_FlagsRegister IS PORT 
 (
     ZeroInput, NegativeInput, CarryInput: IN std_logic;
     SETC: IN std_logic_vector(1 DOWNTO  0);
@@ -13,15 +13,15 @@ ENTITY FlagsRegister IS PORT
     RegOut: OUT std_logic_vector(3 DOWNTO 0)
     --reti input
 );
-END ENTITY FlagsRegister;
+END ENTITY Execute_FlagsRegister;
 
 
-ARCHITECTURE arch1 OF FlagsRegister IS
+ARCHITECTURE Execute_FlagsRegister_ARCH OF Execute_FlagsRegister IS
 
 Signal CarrySignal, ZeroSignal, NegativeSignal: std_logic;
 Signal FlagsSignal: std_logic_vector(3 DOWNTO 0);
 
-COMPONENT my_DFF IS PORT( 
+COMPONENT Execute_DFF_4 IS PORT( 
 d:IN std_logic_vector(3 DOWNTO 0);
 clk,rst,en : IN std_logic;
 q : OUT std_logic_vector(3 DOWNTO 0)
@@ -45,7 +45,8 @@ FlagsSignal(0) <= ZeroSignal;
 FlagsSignal(1) <= NegativeSignal;
 FlagsSignal(2) <= CarrySignal;
 FlagsSignal(3) <= '0';
-Flag_Reg: my_DFF PORT MAP(FlagsSignal, clk, rst, '1', RegOut);
+
+Flag_Reg: Execute_DFF_4 PORT MAP(FlagsSignal, clk, rst, '1', RegOut);
 
 
 
@@ -53,4 +54,4 @@ Flag_Reg: my_DFF PORT MAP(FlagsSignal, clk, rst, '1', RegOut);
 
 
 
-END arch1;
+END Execute_FlagsRegister_ARCH;

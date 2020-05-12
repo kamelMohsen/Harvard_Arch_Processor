@@ -1,15 +1,15 @@
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 
-ENTITY my_DFF IS
+ENTITY Execute_DFF_4 IS
 PORT( 
 d:IN std_logic_vector(3 DOWNTO 0);
 clk,rst,en : IN std_logic;
 q : OUT std_logic_vector(3 DOWNTO 0)
 );
-END my_DFF;
+END Execute_DFF_4;
 
-ARCHITECTURE a_my_DFF OF my_DFF IS
+ARCHITECTURE DFF_4_ARCH OF Execute_DFF_4 IS
 BEGIN
 PROCESS(clk,rst)
 BEGIN
@@ -20,4 +20,4 @@ q <= d;
 
 END IF;
 END PROCESS;
-END a_my_DFF;
+END DFF_4_ARCH;
