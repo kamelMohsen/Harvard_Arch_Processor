@@ -34,7 +34,7 @@ begin
     ELSE std_logic_vector(shift_left(unsigned(Rsrc1Signal), to_integer(unsigned(Instr)))) WHEN ALU_SEL = "1001" 	--Shift left Source1 by Instr bits
     ELSE std_logic_vector(shift_right(unsigned(Rsrc1Signal), to_integer(unsigned(Instr)))) WHEN ALU_SEL = "1010" 	--Shift Right Source1 by Instr bits
     ELSE Rsrc2Signal WHEN ALU_SEL = "1011"; --pass Source2
-    Zero <= '1' WHEN tempOut = "000000000000000000000000000000000" AND ALU_SEL /= "0000" 	--if the ALU is not disabled and the result of the operation is zero, set the zero flag.
+    Zero <= '1' WHEN tempOut(31 DOWNTO 0) = "00000000000000000000000000000000" AND ALU_SEL /= "0000" 	--if the ALU is not disabled and the result of the operation is zero, set the zero flag.
     ELSE '0';
     Negative <= '1' WHEN tempOut(31) = '1' AND ALU_SEL /= "0000" 	--set Negative flag if the most significant bit of the result is 1
     ELSE '0'; 

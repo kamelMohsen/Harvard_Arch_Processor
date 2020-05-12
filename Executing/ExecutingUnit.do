@@ -49,3 +49,9 @@ force -freeze sim:/executingunit/Read2 32'b10100010 0
 run
 run
 run
+#-------------------------------------------------------------------TestCase 4----------------------------------
+force -freeze sim:/executingunit/Read1 8'hffffffff 0
+force -freeze sim:/executingunit/Read2 8'h01 0
+force -freeze sim:/executingunit/ALUSel 0100 0
+run
+run
