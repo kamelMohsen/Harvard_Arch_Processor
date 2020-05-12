@@ -1,13 +1,13 @@
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 
-ENTITY	bitFF IS
+ENTITY	FU_BITFF IS
 	PORT
 	( d,clk,rst,enable : IN std_logic; q : OUT std_logic);
 	END
-bitFF;
+FU_BITFF;
 
-ARCHITECTURE ModelBitFF OF bitFF IS
+ARCHITECTURE FU_BITFF_ARCH OF FU_BITFF IS
 BEGIN
 	PROCESS(clk,rst)
 	BEGIN
@@ -19,4 +19,4 @@ BEGIN
 			END IF;
 		END IF;
 	END PROCESS;
-END ModelBitFF;
+END FU_BITFF_ARCH;
