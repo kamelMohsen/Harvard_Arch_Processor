@@ -24,30 +24,37 @@ Solo_Or_Input: IN std_logic;
 --Divided Bits
 
 Zero_Two_IN:IN std_logic_vector(2 DOWNTO 0);
-Three_Eight:IN std_logic_vector(6 DOWNTO 0);
+Three_Eight:IN std_logic_vector(5 DOWNTO 0);
 Six_Eight_IN:IN std_logic_vector(2 DOWNTO 0);
 Zero_Four:IN std_logic_vector(4 DOWNTO 0);
 Sixteen_ThirtyOne:IN std_logic_vector(15 DOWNTO 0);
 
---FWU Outputs
+--ID/EX INPUTS
+OP1_ADDRESS:IN std_logic_vector(2 DOWNTO 0);
+OP2_ADDRESS:IN std_logic_vector(2 DOWNTO 0);
 
-M1_Sel,M2_Sel: IN std_logic;
-FWUOUTPUT1, FWUOUTPUT2: IN std_logic_vector(31 DOWNTO 0); 
+--MEM INPUTS
+MEM_DESTINATION_ADRESS:IN std_logic_vector(2 DOWNTO 0);
+MEM_DESTINATION_DATA:IN std_logic_vector(31 DOWNTO 0);
+MEM_REG_WRITE : IN STD_LOGIC;
+
+--WB INPUTS
+WB_DESTINATION_ADRESS:IN std_logic_vector(2 DOWNTO 0);
+WB_DESTINATION_DATA:IN std_logic_vector(31 DOWNTO 0);
+WB_REG_WRITE : IN STD_LOGIC;
 
 --not drawn in the design
 
 clk : IN std_logic;
 FlagsRegisterReset: IN std_logic;
-ZeroReset, NegativeReset, CarryReset: IN std_logic;
-
 MemoryInput: In std_logic_vector(3 DOWNTO 0); --Input to Flags Register
 
 --Output to buffer
 AluOut: OUT std_logic_vector(31 DOWNTO 0);
 Six_Eight_OUT:OUT std_logic_vector(2 DOWNTO 0);
 Zero_Two_OUT:OUT std_logic_vector(2 DOWNTO 0);
-Three_Eight_OUT: OUT std_logic_vector(6 DOWNTO 0);
-Extender: OUT std_logic_vector(31 DOWNTO 0);
+Three_Eight_OUT: OUT std_logic_vector(5 DOWNTO 0);
+Extender: OUT std_logic_vector(15 DOWNTO 0);
 FlagsRegisterOut: OUT std_logic_vector(3 DOWNTO 0);
 OutPort_Output: OUT std_logic_vector( 31 DOWNTO 0);
 Swap_Output: OUT std_logic_vector (31 DOWNTO 0);
@@ -95,7 +102,8 @@ END COMPONENT;
 
 COMPONENT Execute_ZeroExtender IS PORT (
     INST: IN std_logic_vector(31 DOWNTO 16);
-    BufferOut, AluOut: OUT std_logic_vector(31 DOWNTO 0)
+    BufferOut: OUT std_logic_vector(31 DOWNTO 0);
+    AluOut: OUT std_logic_vector(15 DOWNTO 0)
 );
 END COMPONENT;
 
@@ -124,6 +132,20 @@ output1: OUT std_logic
 );
 END COMPONENT;
 
+
+COMPONENT Execute_FWU IS 
+    PORT 
+    (
+        MEM_REG_WRITE, WB_REG_WRITE: IN STD_LOGIC;
+        MEM_Destination_Address,WB_Destination_Address,EX_Destination_OP1_Address, EX_Destination_OP2_Address: IN std_logic_vector(2 DOWNTO 0);
+        MEM_Destination_Data,WB_Destination_Data : IN std_logic_vector(31 DOWNTO 0);
+        FW_OP1_Data, FW_OP2_Data : OUT std_logic_vector(31 DOWNTO 0);
+        FW_OP1_Enable, FW_OP2_Enable: OUT std_logic
+    );
+END COMPONENT;
+
+SIGNAL M1_Sel,M2_Sel: std_logic;
+SIGNAL FWUOUTPUT1, FWUOUTPUT2:  std_logic_vector(31 DOWNTO 0); 
 SIGNAL M1Output, M2Output, M3Output, M4Output: std_logic_vector(31 DOWNTO 0);
 SIGNAL ZeroExtendedSignal: std_logic_vector(31 DOWNTO 0);
 SIGNAL ALU_Neg, ALU_Zero, ALU_Carry: std_logic;
@@ -133,7 +155,7 @@ BEGIN
 
 Ext: Execute_ZeroExtender PORT MAP(Sixteen_ThirtyOne, ZeroExtendedSignal, Extender);
 
-FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, FlagsRegisterReset, ZeroReset, CarryReset, NegativeReset, MemoryInput, FROut);
+FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
 
 Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output, OutPort_Output);
 
@@ -153,6 +175,15 @@ and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);
 and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);
 
 or1: Execute_FourInputOr PORT MAP(And1_Out, And2_Out, And3_Out, Solo_Or_Input, Or_Output);
+
+FORWARDING_UNIT: Execute_FWU PORT MAP (MEM_REG_WRITE, WB_REG_WRITE,
+                                        MEM_DESTINATION_ADRESS,WB_DESTINATION_ADRESS,
+                                        OP1_ADDRESS, OP2_ADDRESS,
+                                        MEM_DESTINATION_DATA,WB_DESTINATION_DATA,
+                                        FWUOUTPUT1, FWUOUTPUT2,
+                                        M1_Sel, M2_Sel);
+
+
 END ExecutingUnit_ARCH;
 
 

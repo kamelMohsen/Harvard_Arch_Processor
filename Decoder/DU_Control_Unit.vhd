@@ -4,7 +4,7 @@ USE IEEE.std_logic_1164.all;
 ENTITY DECODER_ControlUnit IS 
 PORT( Instruction: IN std_logic_vector(31 DOWNTO 0);
       CU_CLOCK: IN std_logic;
-      Jmp,OUTT,Branch,Reg_IMM,PC_Reg,Data_Stack,ReadEnable,WriteEnableMemory,Call,RETI,Result_Mem,INN,RegPC_MemPC,Rdst_Rsrc1,Rdst_Rsrc2: OUT std_logic;
+      Jmp,OUTT,Branch,Reg_IMM,PC_Reg,Data_Stack,WriteEnableMemory,Call,RETI,Result_Mem,INN,RegPC_MemPC,Rdst_Rsrc1,Rdst_Rsrc2: OUT std_logic;
       Set_Clr_Carry,WriteEnableWB : OUT std_logic_vector(1 DOWNTO 0);
       SPSel : OUT std_logic_vector(2 DOWNTO 0);
       ALU_Selc : OUT std_logic_vector(3 DOWNTO 0));
@@ -13,6 +13,7 @@ END DECODER_ControlUnit;
 --===================================================================================================================--
 
 ARCHITECTURE DECODER_ControlUnit_ARCH OF DECODER_ControlUnit IS
+SIGNAL ReadEnable:std_logic;
 BEGIN
 	PROCESS(CU_CLOCK)
 	BEGIN

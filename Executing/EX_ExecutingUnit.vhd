@@ -38,8 +38,6 @@ FWUOUTPUT1, FWUOUTPUT2: IN std_logic_vector(31 DOWNTO 0);
 
 clk : IN std_logic;
 FlagsRegisterReset: IN std_logic;
-ZeroReset, NegativeReset, CarryReset: IN std_logic;
-
 MemoryInput: In std_logic_vector(3 DOWNTO 0); --Input to Flags Register
 
 --Output to buffer
@@ -133,7 +131,7 @@ BEGIN
 
 Ext: Execute_ZeroExtender PORT MAP(Sixteen_ThirtyOne, ZeroExtendedSignal, Extender);
 
-FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, FlagsRegisterReset, ZeroReset, CarryReset, NegativeReset, MemoryInput, FROut);
+FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
 
 Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output, OutPort_Output);
 

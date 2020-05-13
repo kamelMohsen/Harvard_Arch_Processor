@@ -1,0 +1,99 @@
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+
+
+
+ENTITY BOB_MEM_WB IS
+	PORT (
+        RESET,STALL,CLK: IN STD_LOGIC;
+        MEMORY_RESULT_IN, RESULT_IN, DESTINATION_IN: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+        INST_0_8_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
+        MEMORY_RESULT_OUT, RESULT_OUT, DESTINATION_OUT: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+        INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0));
+END ENTITY BOB_MEM_WB;
+
+
+ARCHITECTURE BOB_MEM_WB_ARCH OF BOB_MEM_WB IS
+  
+
+
+    --THE MEM/WB WB Register  
+    COMPONENT BOB_MEM_WB_WB IS 
+
+    PORT(
+    Clk,Rst,enable : IN std_logic;
+    d : IN std_logic_vector(4 DOWNTO 0);
+    q : OUT std_logic_vector(4 DOWNTO 0));
+
+    END COMPONENT;
+
+    --THE MEM/WB INST_0_8 Register  
+    COMPONENT BOB_MEM_WB_INST_0_8 IS 
+
+    PORT(
+    Clk,Rst,enable : IN std_logic;
+    d : IN std_logic_vector(8 DOWNTO 0);
+    q : OUT std_logic_vector(8 DOWNTO 0));
+    
+    END COMPONENT;
+
+    --THE MEM/WB DESTINATION Register  
+    COMPONENT BOB_MEM_WB_DESTINATION IS 
+
+    PORT(
+    Clk,Rst,enable : IN std_logic;
+    d : IN std_logic_vector(31 DOWNTO 0);
+    q : OUT std_logic_vector(31 DOWNTO 0));
+    
+    END COMPONENT;
+
+    --THE MEM/WB RESULT Register  
+    COMPONENT BOB_MEM_WB_RESULT IS 
+
+    PORT(
+    Clk,Rst,enable : IN std_logic;
+    d : IN std_logic_vector(31 DOWNTO 0);
+    q : OUT std_logic_vector(31 DOWNTO 0));
+
+    END COMPONENT;
+
+    --THE MEM/WB MEMORY RESULT Register  
+    COMPONENT BOB_MEM_WB_MEMORY_RESULT IS 
+
+    PORT(
+    Clk,Rst,enable : IN std_logic;
+    d : IN std_logic_vector(31 DOWNTO 0);
+    q : OUT std_logic_vector(31 DOWNTO 0));
+
+    END COMPONENT;
+
+
+
+    SIGNAL NOT_STALL: STD_LOGIC;
+    BEGIN	
+    
+
+    NOT_STALL <= NOT STALL;
+
+	--THE WB Register
+	MEM_WB_WB: BOB_MEM_WB_WB PORT MAP (CLK, RESET, NOT_STALL, WB_IN, WB_OUT);
+
+    --THE INST_0_8 Register
+    MEM_WB_INST_0_8: BOB_MEM_WB_INST_0_8 PORT MAP (CLK, RESET, NOT_STALL, INST_0_8_IN, INST_0_8_OUT);
+
+    --THE RESULT Register
+    MEM_WB_RESULT: BOB_MEM_WB_RESULT PORT MAP (CLK, RESET, NOT_STALL, RESULT_IN, RESULT_OUT);
+
+    --THE MEMORY RESULT Register
+	MEM_WB_MEMORY_RESULT: BOB_MEM_WB_MEMORY_RESULT PORT MAP (CLK, RESET, NOT_STALL, MEMORY_RESULT_IN, MEMORY_RESULT_OUT);
+	
+   --THE DESTINATION Register
+    MEM_WB_DESTINATION: BOB_MEM_WB_DESTINATION PORT MAP (CLK, RESET, NOT_STALL, DESTINATION_IN, DESTINATION_OUT);
+
+
+ 
+
+    
+END BOB_MEM_WB_ARCH;

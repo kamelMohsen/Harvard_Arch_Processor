@@ -11,7 +11,9 @@ PORT( PC_in,Fetch_Instruction,INPORT,Result,WrtieBack_WriteData2: IN std_logic_v
       CU_Jmp,CU_OUTT,CU_Branch,CU_Reg_IMM,CU_PC_Reg,CU_Data_Stack,CU_ReadEnable,CU_WriteEnableMemory,CU_Call,CU_RETI,CU_Result_Mem,CU_INN,CU_RegPC_MemPC: OUT std_logic;
       CU_Set_Clr_Carry,CU_WriteEnableWB : OUT std_logic_vector(1 DOWNTO 0);
       CU_SPSel : OUT std_logic_vector(2 DOWNTO 0);
-      CU_ALU_Selc : OUT std_logic_vector(3 DOWNTO 0));
+      CU_ALU_Selc : OUT std_logic_vector(3 DOWNTO 0);
+      OP1_ADDRESS, OP2_ADDRESS: OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
+      );
 
 END DECODESTAGE;
 --===================================================================================================================--
@@ -58,6 +60,9 @@ ControlUnit: DECODER_ControlUnit PORT MAP (Fetch_Instruction,CLOCK_ALL,CU_Jmp,CU
 Mux1: DECODER_mux GENERIC MAP (3) PORT MAP (Fetch_Instruction(2 DOWNTO 0),Fetch_Instruction(8 DOWNTO 6),Enable1_Rdst_Rsrc1,Mux1_Rsrc1);
 Mux2: DECODER_mux GENERIC MAP (3) PORT MAP (Fetch_Instruction(2 DOWNTO 0),Fetch_Instruction(5 DOWNTO 3),Enable2_Rdst_Rsrc2,Mux2_Rsrc2);
 Mux3: DECODER_mux GENERIC MAP (32) PORT MAP (Result,INPORT,IN_Enable,Mux3_WriteData1);
+
+OP1_ADDRESS <= Mux1_Rsrc1;
+OP2_ADDRESS <= Mux2_Rsrc2;
 
 PC_out <= PC_in;
 Decode_instruction <= Fetch_Instruction;
