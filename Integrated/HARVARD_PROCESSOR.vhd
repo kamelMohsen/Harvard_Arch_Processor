@@ -117,7 +117,36 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     END COMPONENT;
 
 
-    
+    COMPONENT BOB_EX_MEM IS
+      PORT (
+      RESET,STALL,CLK: IN STD_LOGIC;
+      RESULT_IN, DESTINATION_IN: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+      WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+      MEM_IN: IN STD_LOGIC_VECTOR(6 DOWNTO 0);
+      FLAGS_IN: IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+      INST_0_8_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
+      EFFECTIVE_ADDRESS_IN: IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+      RESULT_OUT, DESTINATION_OUT: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+      WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+      MEM_OUT: OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
+      FLAGS_OUT: OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+      INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
+      EFFECTIVE_ADDRESS_OUT: OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+      );
+    END COMPONENT;
+
+  
+--********************************************************************************************************************************
+--*********************************************************DONE_IMPORTING_COMPONENTS**********************************************
+--********************************************************************************************************************************
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------DECLARING_SIGNALS------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+
   --INTERMEDIATE BUFFER WIRES
     --IF/ID
     SIGNAL IF_ID_INST_IN_WIRE, IF_ID_PC_IN_WIRE,IF_ID_INST_OUT_WIRE, IF_ID_PC_OUT_WIRE : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -151,18 +180,24 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     SIGNAL JUMP_BIT_OUT_WIRE: std_logic;
     SIGNAL EXTENDED_IMM: STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-
     BEGIN	
-    
+
+--********************************************************************************************************************************
+--*********************************************************DONE_DECALRING_SIGNALS*************************************************
+--********************************************************************************************************************************
+
+
+-----------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------CONCATINATING_CONTROL_SIGNALS------------------------------
+-----------------------------------------------------------------------------------------------------------------------    
 
     CAT_ID_EX_WB <= CS_WB_RegPC_MemPC & CS_WB_IN & CS_WB_Result_Mem & CS_WB_WriteEnable;--WB = (0-1 -> WRITE_ENABLE) & (2 -> RESULT_MEM) & (3 -> IN) & (4 -> REGPC_MEMPC)  
     CAT_ID_EX_MEM <= CS_MEM_RETI & CS_MEM_Call & CS_MEM_WriteEnableMemory & CS_MEM_Data_Stack & CS_MEM_SPSel;--MEM = (0-2 -> SPSEL) & (3 -> DATA_STACK) & (4 -> WRITE_ENABLE_MEMORY) & (5 -> CALL) & (6 -> RETI)
     CAT_ID_EX_EX <= CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_Branch & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL;--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> BRANCH) & (9 -> REG_IMM) & (10 -> PC_REG)
 
 --********************************************************************************************************************************
---*********************************************************DONE_IMPORTING_COMPONENTS**********************************************
+--*********************************************************DONE_CONCATINATING_CONTROL_SIGNALS*************************************
 --********************************************************************************************************************************
-
 
 
 
@@ -172,6 +207,9 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
 -----------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------INITIALIZING_COMPONENTS------------------------------------
 -----------------------------------------------------------------------------------------------------------------------
+
+
+
 
 -----------------------------------------------------------------FETCHING----------------------------------------------
     --THE FETCHING UNIT 
@@ -255,7 +293,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                         ID_EX_INST_OUT_WIRE, 
                                         ID_EX_PC_OUT_WIRE, 
                                         ID_EX_Read1_OUT_WIRE, 
-                                        ID_EX_Read2_OUT_WIRE);
+                                        ID_EX_Read2_OUT_WIRE
+                                        );
                                         
 -------------------------------------------------------------EXECUTING---------------------------------------------
 
@@ -297,6 +336,28 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               OUT_PORT,
                                               EX_MEM_DESTINATION_IN_WIRE,
                                               JUMP_BIT_OUT_WIRE)
+
+    --THE EX/MEM INTERMEDIATE BUFFER
+    EX_MEM_BUFFER: BOB_EX_MEM PORT MAP ( RESET,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
+                                          '0',    --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                          CLK     --CLK ENTERED TO WHOLE PROCESSOR
+                                          EX_MEM_RESULT_IN_WIRE, 
+                                          EX_MEM_DESTINATION_IN_WIRE,
+                                          WB_IN,
+                                          MEM_IN,
+                                          EX_MEM_FLAGS_IN_WIRE,
+                                          EX_MEM_INST_0_8_IN_WIRE,
+                                          EX_MEM_EFFECTIVE_ADDRESS_IN_WIRE,
+                                          EX_MEM_RESULT_OUT_WIRE,
+                                          EX_MEM_DESTINATION_OUT_WIRE,
+                                          WB_OUT,
+                                          MEM_OUT,
+                                          EX_MEM_FLAGS_OUT_WIRE,
+                                          EX_MEM_INST_0_8_OUT_WIRE,
+                                          EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE
+                                          );
+
+
 --********************************************************************************************************************************
 --*********************************************************DONE_INITIALIZING_COMPONENTS*******************************************
 --********************************************************************************************************************************
