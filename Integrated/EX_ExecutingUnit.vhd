@@ -2,7 +2,11 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
 ENTITY ExecutingUnit IS PORT(
-
+--CONTROL SIGNALS-----
+WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+MEM_IN: IN STD_LOGIC_VECTOR(6 DOWNTO 0);
+WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+MEM_OUT: OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
 ------------------------------------INPUT--------------------------------------------------
 --An output from the buffer should be going to the fetch stage
 --Buffer Outputs

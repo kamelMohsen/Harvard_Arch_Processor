@@ -79,6 +79,10 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     --IMPORTING THE EXECUTION UNIT
     COMPONENT ExecutingUnit IS 
       PORT(
+      WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+      MEM_IN: IN STD_LOGIC_VECTOR(6 DOWNTO 0);
+      WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+      MEM_OUT: OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
       PC: IN std_logic_vector(31 DOWNTO 0);
       Read1: IN std_logic_vector(31 DOWNTO 0);
       Read2: IN std_logic_vector(31 DOWNTO 0);
@@ -116,7 +120,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       );
     END COMPONENT;
 
-
+    --IMPORTING EX/MEM INTERMEDIATE BUFFER
     COMPONENT BOB_EX_MEM IS
       PORT (
       RESET,STALL,CLK: IN STD_LOGIC;
@@ -132,6 +136,35 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       FLAGS_OUT: OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
       INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
       EFFECTIVE_ADDRESS_OUT: OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+      );
+    END COMPONENT;
+
+    COMPONENT Memory_unit IS
+      PORT (	
+      Clk : IN std_logic;
+      WriteEnable : IN std_logic;				-- Write enable of the memory
+      StackOrData : IN std_logic;				-- selector of Address
+      ResultOrFlags: IN std_logic;				-- selector of data
+      SPSEL :IN std_logic_vector(2 downto 0);			-- StackPointer selector
+      EA : IN std_logic_vector(31 DOWNTO 0);			-- Effective Address input
+      Result : IN std_logic_vector(31 DOWNTO 0);		-- Result input from ALU_unit
+      Flags : IN std_logic_vector(31 DOWNTO 0);		-- Flags input from ALU_unit
+      WB_ResultOrMem_IN : IN std_logic;			-- WriteBack selector of result or memory  
+      WB_WriteEnable_IN : IN std_logic_vector(1 DOWNTO 0);	-- WriteBack Write Enable
+      WB_INPort_IN : IN std_logic;				-- WriteBack IN-Port enable
+      WB_RegPCOrMemPC_IN : IN std_logic;			-- WriteBack selector of Reg PC or Mem PC
+      RdstOrRsrc_IN : IN std_logic_vector(31 DOWNTO 0);	-- Transition of Rdst data or Rsrc data from Exec to WB
+      Inst6to8_IN : IN std_logic_vector(2 DOWNTO 0);		-- Transition of Inst[6-8] from Exec to WB
+      Inst0to2_IN : IN std_logic_vector(2 DOWNTO 0);		-- Transition of Inst[0-2] from Exec to WB
+      DataRead : OUT std_logic_vector(31 DOWNTO 0);  	-- Data Read from memory
+      Result_OUT : OUT std_logic_vector(31 DOWNTO 0);
+      WB_ResultOrMem_Out : OUT std_logic;
+      WB_WriteEnable_Out : OUT std_logic_vector(1 DOWNTO 0);
+      WB_INPort_Out : OUT std_logic;
+      WB_RegPCOrMemPC_Out : OUT std_logic;
+      RdstOrRsrc_OUT : OUT std_logic_vector(31 DOWNTO 0);	
+      Inst6to8_OUT : OUT std_logic_vector(2 DOWNTO 0);		
+      Inst0to2_OUT : OUT std_logic_vector(2 DOWNTO 0)
       );
     END COMPONENT;
 
@@ -160,7 +193,14 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     SIGNAL EX_MEM_DESTINATION_IN_WIRE,EX_MEM_DESTINATION_OUT_WIRE, EX_MEM_RESULT_IN_WIRE,EX_MEM_RESULT_OUT_WIRE: STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL EX_MEM_FLAGS_IN_WIRE, EX_MEM_FLAGS_OUT_WIRE : STD_LOGIC_VECTOR(3 DOWNTO 0);
     SIGNAL EX_MEM_EFFECTIVE_ADDRESS_IN_WIRE, EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE: STD_LOGIC_VECTOR(15 DOWNTO 0);
-    SIGNAL EX_MEM_INST_0_8_IN_WIRE, EX_MEM_0_8_OUT_WIRE: STD_LOGIC_VECTOR(8 DOWNTO 0);
+    SIGNAL EX_MEM_INST_0_8_IN_WIRE, EX_MEM_INST_0_8_OUT_WIRE: STD_LOGIC_VECTOR(8 DOWNTO 0);
+    SIGNAL EX_MEM_WB_IN_WIRE, EX_MEM_WB_OUT_WIRE: std_logic_vector(4 DOWNTO 0);
+    SIGNAL EX_MEM_MEM_IN_WIRE, EX_MEM_MEM_OUT_WIRE: std_logic_vector(6 DOWNTO 0);
+    --MEM/WB    
+    SIGNAL  MEM_WB_MEMORY_RESULT_IN_WIRE, MEM_WB_RESULT_IN_WIRE, MEM_WB_DESTINATION_IN_WIRE, MEM_WB_MEMORY_RESULT_OUT_WIRE, MEM_WB_RESULT_OUT_WIRE, MEM_WB_DESTINATION_OUT_WIRE:  STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL  MEM_WB_WB_IN_WIRE, MEM_WB_WB_OUT_WIRE:  STD_LOGIC_VECTOR(4 DOWNTO 0);
+    SIGNAL  MEM_WB_INST_0_8_IN_WIRE, MEM_WB_INST_0_8_OUT_WIRE:  STD_LOGIC_VECTOR(8 DOWNTO 0);
+
     --CONCATENATED SIGNALS
     SIGNAL CAT_ID_EX_WB: std_logic_vector(4 DOWNTO 0);
     SIGNAL CAT_ID_EX_MEM: std_logic_vector(6 DOWNTO 0);
@@ -180,8 +220,12 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     SIGNAL JUMP_BIT_OUT_WIRE: std_logic;
     SIGNAL EXTENDED_IMM: STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-    BEGIN	
 
+    --SIGNALS EXTRA BTFOK AZMAT
+    SIGNAL ZERO_EXTENDER_FLAGS, ZERO_EXTENDER_EFFECTIVE_ADDRESS: STD_LOGIC_VECTOR(31 DOWNTO 0 );
+
+
+    BEGIN
 --********************************************************************************************************************************
 --*********************************************************DONE_DECALRING_SIGNALS*************************************************
 --********************************************************************************************************************************
@@ -194,6 +238,11 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     CAT_ID_EX_WB <= CS_WB_RegPC_MemPC & CS_WB_IN & CS_WB_Result_Mem & CS_WB_WriteEnable;--WB = (0-1 -> WRITE_ENABLE) & (2 -> RESULT_MEM) & (3 -> IN) & (4 -> REGPC_MEMPC)  
     CAT_ID_EX_MEM <= CS_MEM_RETI & CS_MEM_Call & CS_MEM_WriteEnableMemory & CS_MEM_Data_Stack & CS_MEM_SPSel;--MEM = (0-2 -> SPSEL) & (3 -> DATA_STACK) & (4 -> WRITE_ENABLE_MEMORY) & (5 -> CALL) & (6 -> RETI)
     CAT_ID_EX_EX <= CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_Branch & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL;--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> BRANCH) & (9 -> REG_IMM) & (10 -> PC_REG)
+
+
+    ZERO_EXTENDER_FLAGS <= X"0000000" & EX_MEM_FLAGS_OUT_WIRE;
+    ZERO_EXTENDER_EFFECTIVE_ADDRESS <= X"0000" & EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE;
+
 
 --********************************************************************************************************************************
 --*********************************************************DONE_CONCATINATING_CONTROL_SIGNALS*************************************
@@ -299,7 +348,11 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
 -------------------------------------------------------------EXECUTING---------------------------------------------
 
     --THE EXECUTING UNIT
-    EXECUTION_UNIT: ExecutingUnit PORT MAP (ID_EX_PC_OUT_WIRE,
+    EXECUTION_UNIT: ExecutingUnit PORT MAP ( ID_EX_WB_OUT_WIRE,
+                                              ID_EX_MEM_OUT_WIRE,
+                                              EX_MEM_WB_IN_WIRE,
+                                              EX_MEM_MEM_IN_WIRE,
+                                              ID_EX_PC_OUT_WIRE,
                                               ID_EX_Read1_OUT_WIRE, 
                                               ID_EX_Read2_OUT_WIRE,
                                               ID_EX_EX_OUT_WIRE(5 DOWNTO 4),
@@ -320,10 +373,10 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               ID_EX_OP2_ADDRESS_OUT_WIRE,
                                               "000",    --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               X"00000000",    --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              "0",    --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              '0',    --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               "000",    --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               X"00000000",     --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              "0",    --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              '0',    --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               CLK,
                                               RESET,
                                               "0000",
@@ -335,27 +388,56 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               EX_MEM_FLAGS_IN_WIRE,
                                               OUT_PORT,
                                               EX_MEM_DESTINATION_IN_WIRE,
-                                              JUMP_BIT_OUT_WIRE)
+                                              JUMP_BIT_OUT_WIRE);
 
     --THE EX/MEM INTERMEDIATE BUFFER
     EX_MEM_BUFFER: BOB_EX_MEM PORT MAP ( RESET,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
                                           '0',    --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                          CLK     --CLK ENTERED TO WHOLE PROCESSOR
+                                          CLK,     --CLK ENTERED TO WHOLE PROCESSOR
                                           EX_MEM_RESULT_IN_WIRE, 
                                           EX_MEM_DESTINATION_IN_WIRE,
-                                          WB_IN,
-                                          MEM_IN,
+                                          EX_MEM_WB_IN_WIRE,
+                                          EX_MEM_MEM_IN_WIRE,
                                           EX_MEM_FLAGS_IN_WIRE,
                                           EX_MEM_INST_0_8_IN_WIRE,
                                           EX_MEM_EFFECTIVE_ADDRESS_IN_WIRE,
                                           EX_MEM_RESULT_OUT_WIRE,
                                           EX_MEM_DESTINATION_OUT_WIRE,
-                                          WB_OUT,
-                                          MEM_OUT,
+                                          EX_MEM_WB_OUT_WIRE,
+                                          EX_MEM_MEM_OUT_WIRE,
                                           EX_MEM_FLAGS_OUT_WIRE,
                                           EX_MEM_INST_0_8_OUT_WIRE,
                                           EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE
                                           );
+
+-------------------------------------------------------------MEMORY---------------------------------------------
+
+    MEMORY_UNITT: Memory_unit PORT MAP (CLK,
+                                        EX_MEM_MEM_OUT_WIRE(4),				-- Write enable of the memory
+                                        EX_MEM_MEM_OUT_WIRE(3),				-- selector of Address
+                                        '0',				-- selector of data
+                                        EX_MEM_MEM_OUT_WIRE(2 DOWNTO 0),			-- StackPointer selector
+                                        ZERO_EXTENDER_EFFECTIVE_ADDRESS,			-- Effective Address input
+                                        EX_MEM_RESULT_OUT_WIRE,		-- Result input from ALU_unit
+                                        ZERO_EXTENDER_FLAGS,		-- Flags input from ALU_unit
+                                        EX_MEM_WB_OUT_WIRE(2),			-- WriteBack selector of result or memory  
+                                        EX_MEM_WB_OUT_WIRE(1 DOWNTO 0),	-- WriteBack Write Enable
+                                        EX_MEM_WB_OUT_WIRE(3),				-- WriteBack IN-Port enable
+                                        EX_MEM_WB_OUT_WIRE(4),			-- WriteBack selector of Reg PC or Mem PC
+                                        EX_MEM_DESTINATION_OUT_WIRE,	-- Transition of Rdst data or Rsrc data from Exec to WB
+                                        EX_MEM_INST_0_8_OUT_WIRE(8 DOWNTO 6),		-- Transition of Inst[6-8] from Exec to WB
+                                        EX_MEM_INST_0_8_OUT_WIRE(2 DOWNTO 0),		-- Transition of Inst[0-2] from Exec to WB
+                                        MEM_WB_MEMORY_RESULT_IN_WIRE,  	-- Data Read from memory
+                                        MEM_WB_RESULT_IN_WIRE,
+                                        MEM_WB_WB_IN_WIRE(2),
+                                        MEM_WB_WB_IN_WIRE(1 DOWNTO 0),
+                                        MEM_WB_WB_IN_WIRE(3),
+                                        MEM_WB_WB_IN_WIRE(4),
+                                        MEM_WB_DESTINATION_IN_WIRE,
+                                        MEM_WB_INST_0_8_IN_WIRE(8 DOWNTO 6),
+                                        MEM_WB_INST_0_8_IN_WIRE(2 DOWNTO 0)
+                                        
+                                        );
 
 
 --********************************************************************************************************************************
