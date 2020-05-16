@@ -1,4 +1,4 @@
-from curses.ascii import isspace
+#from curses.ascii import isspace
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import re
@@ -35,7 +35,7 @@ try:
     for line in input_file:
         regex_line = re.split("#", line)
         uncommented = regex_line.pop(0)
-        if uncommented and not uncommented.isspace():
+        if uncommented: #and not uncommented.isspace():
             commands.insert(list_count, uncommented)
             list_count += 1
 

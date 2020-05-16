@@ -4,9 +4,9 @@ USE IEEE.STD_LOGIC_1164.ALL;
 ENTITY ExecutingUnit IS PORT(
 --CONTROL SIGNALS-----
 WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-MEM_IN: IN STD_LOGIC_VECTOR(6 DOWNTO 0);
+MEM_IN: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
 WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
-MEM_OUT: OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
+MEM_OUT: OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
 ------------------------------------INPUT--------------------------------------------------
 --An output from the buffer should be going to the fetch stage
 --Buffer Outputs
@@ -27,12 +27,7 @@ Solo_Or_Input: IN std_logic;
 
 --Divided Bits
 
-Zero_Two_IN:IN std_logic_vector(2 DOWNTO 0);
-Three_Eight:IN std_logic_vector(5 DOWNTO 0);
-Six_Eight_IN:IN std_logic_vector(2 DOWNTO 0);
-Zero_Four:IN std_logic_vector(4 DOWNTO 0);
-Sixteen_ThirtyOne:IN std_logic_vector(15 DOWNTO 0);
-
+ZERO_TO_THIRTY_ONE_IN: IN std_logic_vector(31 DOWNTO 0);
 --ID/EX INPUTS
 OP1_ADDRESS:IN std_logic_vector(2 DOWNTO 0);
 OP2_ADDRESS:IN std_logic_vector(2 DOWNTO 0);
@@ -55,9 +50,7 @@ MemoryInput: In std_logic_vector(3 DOWNTO 0); --Input to Flags Register
 
 --Output to buffer
 AluOut: OUT std_logic_vector(31 DOWNTO 0);
-Six_Eight_OUT:OUT std_logic_vector(2 DOWNTO 0);
-Zero_Two_OUT:OUT std_logic_vector(2 DOWNTO 0);
-Three_Eight_OUT: OUT std_logic_vector(5 DOWNTO 0);
+ZERO_TO_EIGHT_OUT: OUT std_logic_vector(8 DOWNTO 0);
 Extender: OUT std_logic_vector(15 DOWNTO 0);
 FlagsRegisterOut: OUT std_logic_vector(3 DOWNTO 0);
 OutPort_Output: OUT std_logic_vector( 31 DOWNTO 0);
@@ -98,9 +91,10 @@ COMPONENT Execute_FlagsRegister IS PORT (
 END COMPONENT;
 
 COMPONENT Execute_OutPort IS PORT  (
-    sel: IN std_logic;
-    input: IN std_logic_vector(31 DOWNTO 0);
-    output: OUT std_logic_vector(31 DOWNTO 0)
+	en: IN std_logic;
+	input1: IN std_logic_vector(31 DOWNTO 0);
+	clk: IN std_logic;
+	output1: OUT std_logic_vector(31 DOWNTO 0)
     );
 END COMPONENT;
 
@@ -157,21 +151,19 @@ SIGNAL FROut: std_logic_vector(3 DOWNTO 0);
 SIGNAL And1_Out, And2_Out, And3_Out: std_logic;
 BEGIN
 
-Ext: Execute_ZeroExtender PORT MAP(Sixteen_ThirtyOne, ZeroExtendedSignal, Extender);
+Ext: Execute_ZeroExtender PORT MAP(ZERO_TO_THIRTY_ONE_IN(31 DOWNTO 16), ZeroExtendedSignal, Extender);
 
 FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
 
-Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output, OutPort_Output);
+Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk, OutPort_Output);
 
 Mux1: Execute_MUX2x1 PORT MAP(Read1, FWUOUTPUT1 , M1_Sel, M1Output);
 Mux2: Execute_MUX2x1 PORT MAP(Read2, FWUOUTPUT2 , M2_Sel, M2Output);
 Mux3: Execute_MUX2x1 PORT MAP(PC, M1Output, M3_Sel, M3Output);
 Mux4: Execute_MUX2x1 PORT MAP(M2Output, ZeroExtendedSignal, M4_Sel, M4Output);
 
-ALU1: Execute_ALU PORT MAP(M3Output, M4Output, Zero_Four, ALUSel, '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut);
-Six_Eight_OUT <= Six_Eight_IN;
-Three_Eight_OUT <= Three_Eight;
-Zero_Two_OUT <= Zero_Two_IN;
+ALU1: Execute_ALU PORT MAP(M3Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4), ALUSel, '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut);
+ZERO_TO_EIGHT_OUT <=ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 0);
 Swap_Output <= M2Output;
 FlagsRegisterOut <= FROut;
 and1: Execute_TwoInputAnd PORT MAP(FROut(0), AND_INPUT1, And1_Out);
@@ -191,6 +183,3 @@ FORWARDING_UNIT: Execute_FWU PORT MAP (MEM_REG_WRITE, WB_REG_WRITE,
 END ExecutingUnit_ARCH;
 
 
---Bottom Register Outputs DONEZEL WASHINGTON
---OutPort DONEZEL WASHINGTON
---Ands and Ors

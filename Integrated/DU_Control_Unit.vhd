@@ -4,7 +4,7 @@ USE IEEE.std_logic_1164.all;
 ENTITY DECODER_ControlUnit IS 
 PORT( Instruction: IN std_logic_vector(31 DOWNTO 0);
       CU_CLOCK: IN std_logic;
-      Jmp,OUTT,Branch,Reg_IMM,PC_Reg,Data_Stack,WriteEnableMemory,Call,RETI,Result_Mem,INN,RegPC_MemPC,Rdst_Rsrc1,Rdst_Rsrc2: OUT std_logic;
+      Jmp,OUTT,Branch,Reg_IMM,PC_Reg,Data_Stack,WriteEnableMemory,Call,RETI,Result_Mem,INN,RegPC_MemPC,Rdst_Rsrc1,Rdst_Rsrc2,INT: OUT std_logic;
       Set_Clr_Carry,WriteEnableWB : OUT std_logic_vector(1 DOWNTO 0);
       SPSel : OUT std_logic_vector(2 DOWNTO 0);
       ALU_Selc : OUT std_logic_vector(3 DOWNTO 0));
@@ -38,6 +38,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -62,6 +63,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -86,6 +88,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -110,6 +113,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -135,6 +139,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -159,6 +164,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -183,6 +189,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -211,6 +218,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "10";
@@ -235,6 +243,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -259,6 +268,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -283,6 +293,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -308,6 +319,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -332,6 +344,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -356,6 +369,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -380,6 +394,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -407,6 +422,7 @@ BEGIN
 				WriteEnableMemory <= '1';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -431,6 +447,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '1';
 				WriteEnableWB <= "01";
@@ -458,6 +475,7 @@ BEGIN
 				WriteEnableMemory <= '1';
 				Call <= '1';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '1';
 				WriteEnableWB <= "00";
@@ -482,6 +500,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '1';
 				WriteEnableWB <= "00";
@@ -506,6 +525,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '1';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '1';
 				WriteEnableWB <= "00";
@@ -533,6 +553,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -557,6 +578,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -581,6 +603,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -605,6 +628,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "00";
@@ -632,6 +656,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -656,6 +681,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '0';
 				WriteEnableWB <= "01";
@@ -680,6 +706,7 @@ BEGIN
 				WriteEnableMemory <= '0';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '1';
 				WriteEnableWB <= "01";
@@ -704,6 +731,7 @@ BEGIN
 				WriteEnableMemory <= '1';
 				Call <= '0';
 				RETI <= '0';
+				INT <= '0';
 			END IF;
 
 		END IF;
