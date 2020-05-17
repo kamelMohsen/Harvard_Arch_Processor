@@ -19,10 +19,7 @@ try:
         output2_filename = re.sub(".asm", "Instruction.mem", input_filename)
         file_path = re.split(input_filename, input_file_path).pop(0)
         output1_file_path = file_path + output1_filename
-        print(output1_file_path)
         output2_file_path = file_path + output2_filename
-        print(output2_file_path)
-
     except IndexError:
         print("Did not open file")
         exit(0)
@@ -55,15 +52,17 @@ try:
     output1_file.flush()
 
     memory_location1 = 0
+    org_counter = 0
     # Assembler Code
     for command in commands:
-        if memory_location1 == 4:
+        if memory_location1 == 4 or org_counter > 2:
             break;
         new_command = re.sub(",", " ", command)
         sub_commands = re.split("\s+", new_command.lower())
         operation = sub_commands.pop(0)
         # ***************ORG COMMAND***************
         if operation == ".org":
+            org_counter += 1
             org_location = sub_commands.pop(0)
             while org_location != str(memory_location1):
                 output1_file.write(str(memory_location1) + ": ")
@@ -93,7 +92,7 @@ try:
     output2_file.write("/// format=mti addressradix=d dataradix=b version=1.0 wordsperline=1n\n")
     output2_file.flush()
     memory_location2 = 0
-
+    org_counter = 0
     # Assembler Code
     for command in commands:
 
@@ -103,11 +102,14 @@ try:
         operation = sub_commands.pop(0)
         # ***************ORG COMMAND***************
         if operation == ".org":
+            org_counter += 1
             org_location = sub_commands.pop(0)
-            while org_location != str(memory_location2):
-                output2_file.write(str(memory_location2) + ": ")
-                output2_file.write("0000000000000000\n")
-                memory_location2 += 1
+            if org_counter > 2:
+                decimal_org = int(org_location, 16)
+                while decimal_org != memory_location2:
+                    output2_file.write(str(memory_location2) + ": ")
+                    output2_file.write("0000000000000000\n")
+                    memory_location2 += 1
         # ***************SETC OPERATION***************
         elif operation == "setc":
             output2_file.write(str(memory_location2) + ": ")
@@ -222,10 +224,11 @@ try:
             memory_location2 += 1
         else:
             try:
-                hexa = bin(int(operation, 16))[2:].zfill(16)
-                output2_file.write(str(memory_location2) + ": ")
-                output2_file.write("0000000000000000\n")
-                memory_location2 += 1
+                if org_counter > 2:
+                    hexa = bin(int(operation, 16))[2:].zfill(16)
+                    output2_file.write(str(memory_location2) + ": ")
+                    output2_file.write("0000000000000000\n")
+                    memory_location2 += 1
             except ValueError:
                 print("ORG of data mem")
 
