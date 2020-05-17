@@ -248,7 +248,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
 
     --EXECUTION UNIT SIGNALS
     SIGNAL JUMP_BIT_OUT_WIRE: std_logic;
-    SIGNAL EXTENDED_IMM: STD_LOGIC_VECTOR(31 DOWNTO 0);
+   -- SIGNAL EXTENDED_IMM: STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 
     --SIGNALS EXTRA BTFOK AZMAT FEL MEM
@@ -301,7 +301,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     FETCHING_UNIT: FU_FETCHER PORT MAP (INT_SIGNAL, --INTERUPT SIGNAL ENTERED TO THE WHOLE PROCESSOR
                                           JUMP_BIT_OUT_WIRE,  --JUMP BIT THAT COMES FROM EX STAGE
                                           '0',  --RETI BIT THAT COME FROM RETI UNIT (MISSING LESA MA ET3AMLSH)***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                          WB_FETCH_MEMORY_OUT_WIRE,  --MEMORY BIT THAT COMES FROM WB STAGE***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                          WB_FETCH_MEMORY_OUT_WIRE,  --MEMORY BIT THAT COMES FROM WB STAGE
                                           CLK,  --CLK ENTERED TO WHOLE PROCESSOR
                                           X"00000000", --JUMP LOCATION FROM EX SATGE (MISSING LESA MA ET3AMLSH)***&^$^$%^$%^$%%$#@!$#%^%%$#
                                           WB_WRITE_BACK_DATA1_OUT_WIRE, --MEMORY LOCATION FROM MEM STAGE
@@ -404,15 +404,15 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               ID_EX_INST_OUT_WIRE(31 DOWNTO 0),
                                               ID_EX_OP1_ADDRESS_OUT_WIRE,
                                               ID_EX_OP2_ADDRESS_OUT_WIRE,
-                                              "000",    --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              X"00000000",    --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              '0',    --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              "000",    --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              X"00000000",     --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              '0',    --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              EX_MEM_INST_0_8_IN_WIRE(2 DOWNTO 0),    --RDST
+                                              EX_MEM_RESULT_OUT_WIRE,    --RESULT FROM MEMORY
+                                              EX_MEM_WB_OUT_WIRE(0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              MEM_WB_INST_0_8_IN_WIRE(2 DOWNTO 0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              WB_WRITE_BACK_DATA1_OUT_WIRE,     --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              MEM_WB_WB_OUT_WIRE(0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               CLK,
                                               RESET,
-                                              "0000",
+                                              MEM_WB_MEMORY_RESULT_IN_WIRE(3 DOWNTO 0),
                                               EX_MEM_RESULT_IN_WIRE,
                                               EX_MEM_INST_0_8_IN_WIRE(8 DOWNTO 0),
                                               EX_MEM_EFFECTIVE_ADDRESS_IN_WIRE,
@@ -447,7 +447,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                         CLK,
                                         EX_MEM_MEM_OUT_WIRE(4),				-- Write enable of the memory
                                         EX_MEM_MEM_OUT_WIRE(3),				-- selector of Address
-                                        '0',				-- selector of data
+                                        EX_MEM_MEM_OUT_WIRE(7),				-- selector of data
                                         EX_MEM_MEM_OUT_WIRE(2 DOWNTO 0),			-- StackPointer selector
                                         ZERO_EXTENDER_EFFECTIVE_ADDRESS,			-- Effective Address input
                                         EX_MEM_RESULT_OUT_WIRE,		-- Result input from ALU_unit
@@ -505,4 +505,6 @@ WRITEBACK_UNITT: WriteBack PORT MAP (  MEM_WB_RESULT_OUT_WIRE,
 --********************************************************************************************************************************
 --*********************************************************DONE_INITIALIZING_COMPONENTS*******************************************
 --********************************************************************************************************************************
+
+  WB_INST_0_8_OUT_WIRE(5 DOWNTO 3) <= "000";
 END HARVARD_PROCESSOR_ARCH;

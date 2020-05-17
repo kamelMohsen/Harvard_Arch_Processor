@@ -43,7 +43,7 @@ try:
         output_file = open(output_file_path, "w")
         output_file.write("// memory data file (do not edit the following line - required for mem load use)\n")
         output_file.write("// instance=/fu_instruction_memory/ram\n")
-        output_file.write("/// format=mti addressradix=d dataradix=h version=1.0 wordsperline=1n\n")
+        output_file.write("/// format=mti addressradix=d dataradix=b version=1.0 wordsperline=1n\n")
         output_file.flush()
 
     memory_location = 0
