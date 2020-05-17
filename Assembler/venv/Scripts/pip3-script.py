@@ -1,4 +1,4 @@
-#!/Users/KIMO/Desktop/Harvard_Arch_Processor/Assembler/venv/bin/python
+#!"C:\Users\Kamel\Desktop\Spring 2020\Architecture\Project\Harvard_Arch_Processor\Assembler\venv\Scripts\python.exe"
 # EASY-INSTALL-ENTRY-SCRIPT: 'pip==19.0.3','console_scripts','pip3'
 __requires__ = 'pip==19.0.3'
 import re

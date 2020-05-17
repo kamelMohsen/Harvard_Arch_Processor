@@ -37,11 +37,11 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/KIMO/Desktop/Harvard_Arch_Processor/Assembler/venv"
+VIRTUAL_ENV="C:\Users\Kamel\Desktop\Spring 2020\Architecture\Project\Harvard_Arch_Processor\Assembler\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
-PATH="$VIRTUAL_ENV/bin:$PATH"
+PATH="$VIRTUAL_ENV/Scripts:$PATH"
 export PATH
 
 # unset PYTHONHOME if set

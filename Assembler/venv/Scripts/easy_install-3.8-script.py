@@ -1,4 +1,4 @@
-#!/Users/KIMO/Desktop/Harvard_Arch_Processor/Assembler/venv/bin/python
+#!"C:\Users\Kamel\Desktop\Spring 2020\Architecture\Project\Harvard_Arch_Processor\Assembler\venv\Scripts\python.exe"
 # EASY-INSTALL-ENTRY-SCRIPT: 'setuptools==40.8.0','console_scripts','easy_install-3.8'
 __requires__ = 'setuptools==40.8.0'
 import re
