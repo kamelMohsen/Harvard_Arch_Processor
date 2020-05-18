@@ -8,7 +8,7 @@ END DECODER_WriteDecoder;
 
 ARCHITECTURE DECODER_writeDecoder_ARCH OF DECODER_WriteDecoder IS
 BEGIN
-	PROCESS(CLK,Enable)
+	PROCESS(CLK,Enable,INP)
 	BEGIN
 		IF Enable='0' THEN 
 			OUTP <= (OTHERS=>'0');

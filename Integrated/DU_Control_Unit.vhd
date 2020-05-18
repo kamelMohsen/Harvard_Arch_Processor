@@ -15,7 +15,7 @@ END DECODER_ControlUnit;
 ARCHITECTURE DECODER_ControlUnit_ARCH OF DECODER_ControlUnit IS
 SIGNAL ReadEnable:std_logic;
 BEGIN
-	PROCESS(CU_CLOCK)
+	PROCESS(CU_CLOCK,Instruction)
 	BEGIN
 --=========================================================================================--
 		IF(Instruction(15 DOWNTO 12)="0000") THEN

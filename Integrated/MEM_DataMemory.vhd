@@ -44,7 +44,7 @@ BEGIN
 	END PROCESS;
 	
 	DataOut <= ram(IntegerAddressPlusOne) & ram(IntegerAddress) WHEN StackOrData = '0' AND RESET = '0' 
-	ELSE ram(IntegerAddressMinusOne) & ram(IntegerAddress) WHEN StackOrData = '1' AND RESET = '0'
+	ELSE ram(IntegerAddress) & ram(IntegerAddressMinusOne) WHEN StackOrData = '1' AND RESET = '0'
 	ELSE ram(1) & ram(0) WHEN RESET = '1' ;
 	
 	

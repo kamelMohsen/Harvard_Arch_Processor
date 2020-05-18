@@ -27,11 +27,11 @@ clk,rst,en : IN std_logic;
 q : OUT std_logic_vector(3 DOWNTO 0)
 );
 END COMPONENT;
-
+SIGNAL REG_OUT: STD_LOGIC_VECTOR(3 DOWNTO 0);
 BEGIN
 
 
-CarrySignal <= CarryInput WHEN SETC = "00" OR SETC = "11"
+CarrySignal <= REG_OUT(2) WHEN SETC = "00" OR SETC = "11"
 ELSE  '1' WHEN SETC = "01"
 ELSE  '0' WHEN SETC = "10" OR CarryReset = '1';
  
@@ -46,8 +46,8 @@ FlagsSignal(1) <= NegativeSignal;
 FlagsSignal(2) <= CarrySignal;
 FlagsSignal(3) <= '0';
 
-Flag_Reg: Execute_DFF_4 PORT MAP(FlagsSignal, clk, rst, '1', RegOut);
-
+Flag_Reg: Execute_DFF_4 PORT MAP(FlagsSignal, clk, rst, '1', REG_OUT);
+RegOut <= REG_OUT;
 
 
 

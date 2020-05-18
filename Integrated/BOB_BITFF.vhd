@@ -13,7 +13,7 @@ BEGIN
 	BEGIN
 		IF (rst = '1') THEN 
 			q <= '0';
-		ELSIF clk'event and clk = '0' THEN
+		ELSIF clk'event and clk = '1' THEN
 			IF enable ='1' THEN
 				q<=d;
 			END IF;

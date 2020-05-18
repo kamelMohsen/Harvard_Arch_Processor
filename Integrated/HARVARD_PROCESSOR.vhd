@@ -167,7 +167,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       WB_RegPCOrMemPC_Out : OUT std_logic;
       RdstOrRsrc_OUT : OUT std_logic_vector(31 DOWNTO 0);	
       Inst0to8_OUT : OUT std_logic_vector(8 DOWNTO 0);
-      RESET: IN STD_LOGIC
+      RESET: IN STD_LOGIC;
+      TEST_MEM_ADDRESS_IN, TEST_MEM_DATA_IN: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
       );
     END COMPONENT;
 
@@ -272,7 +273,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     --TESTING SIGNALS 
     SIGNAL REG_0_TEST, REG_1_TEST, REG_2_TEST, REG_3_TEST, REG_4_TEST, REG_5_TEST, REG_6_TEST, REG_7_TEST ,WRITE_DATA1_TEST: STD_LOGIC_VECTOR(31 DOWNTO 0); 
     SIGNAL FORWARD_OP1_TEST,FORWARD_OP2_TEST:  STD_LOGIC;
-    
+    SIGNAL DATA_MEM_IN_TEST, DATA_MEM_ADDRESS_TEST: STD_LOGIC_VECTOR(31 DOWNTO 0);
     BEGIN
 --********************************************************************************************************************************
 --*********************************************************DONE_DECALRING_SIGNALS*************************************************
@@ -494,7 +495,9 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                         MEM_WB_WB_IN_WIRE(4),
                                         MEM_WB_DESTINATION_IN_WIRE,
                                         MEM_WB_INST_0_8_IN_WIRE(8 DOWNTO 0),
-					                              RESET
+                                        RESET,
+                                        DATA_MEM_ADDRESS_TEST,
+                                        DATA_MEM_IN_TEST
                                         );
 
     --THE EX/MEM INTERMEDIATE BUFFER

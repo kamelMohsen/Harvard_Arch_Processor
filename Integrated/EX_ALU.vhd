@@ -41,7 +41,7 @@ begin
     FlagsRegisterEnable <= '0' when ALU_SEL = "0000"
     ELSE '1';
     Carry <= '1' WHEN  tempOut(32) = '1'
-    ELSE '0';	
+    ELSE '0' WHEN ALU_SEL /= "1000";	
     Result <= tempOut(31 DOWNTO 0); --set the result to tempOut
     
 END Execute_ALU_ARCH;

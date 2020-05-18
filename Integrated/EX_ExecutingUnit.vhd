@@ -153,9 +153,9 @@ SIGNAL FROut: std_logic_vector(3 DOWNTO 0);
 SIGNAL And1_Out, And2_Out, And3_Out: std_logic;
 BEGIN
 
-CARRY_FLAG_OUT <=  ALU_Carry;
-ZERO_FLAG_OUT <= ALU_Zero; 
-NEGATIVE_FLAG_OUT <= ALU_Neg;
+CARRY_FLAG_OUT <=  FROut(2);
+ZERO_FLAG_OUT <=   FROut(0); 
+NEGATIVE_FLAG_OUT <= FROut(1);
 
 WB_OUT <= WB_IN;
 MEM_OUT <= MEM_IN;
@@ -166,8 +166,8 @@ FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, Fla
 
 Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk, OutPort_Output);
 
-Mux1: Execute_MUX2x1 PORT MAP(Read1, FWUOUTPUT1 , M1_Sel, M1Output);
-Mux2: Execute_MUX2x1 PORT MAP(Read2, FWUOUTPUT2 , M2_Sel, M2Output);
+Mux1: Execute_MUX2x1 PORT MAP(Read1, FWUOUTPUT1 , '0', M1Output);--eftkr rag3 el fw ba3dain M1_Sel,M2_Sel
+Mux2: Execute_MUX2x1 PORT MAP(Read2, FWUOUTPUT2 , '0', M2Output);
 Mux3: Execute_MUX2x1 PORT MAP(PC, M1Output, M3_Sel, M3Output);
 Mux4: Execute_MUX2x1 PORT MAP(M2Output, ZeroExtendedSignal, M4_Sel, M4Output);
 

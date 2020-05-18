@@ -26,7 +26,8 @@ PORT (	RETI: IN STD_LOGIC;
 	WB_RegPCOrMemPC_Out : OUT std_logic;
 	RdstOrRsrc_OUT : OUT std_logic_vector(N-1 DOWNTO 0);	
 	Inst0to8_OUT : OUT std_logic_vector(8 DOWNTO 0);		
-	RESET: IN STD_LOGIC
+	RESET: IN STD_LOGIC;
+	TEST_MEM_ADDRESS_IN, TEST_MEM_DATA_IN: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
 		);
 END ENTITY Memory_unit;
 
@@ -79,6 +80,9 @@ ELSE '1';
 
 Data <= Result WHEN RETI_OR_INT = '0' 
 ELSE  Flags WHEN RETI_OR_INT = '1';
+
+TEST_MEM_ADDRESS_IN <= Address;
+TEST_MEM_DATA_IN <= Data;
 
 Address <= EA WHEN StackOrData = '0'
 ELSE X"00000" & '0' & StackAddress WHEN StackOrData = '1';
