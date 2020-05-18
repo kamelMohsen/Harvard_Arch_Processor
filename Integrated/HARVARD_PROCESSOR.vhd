@@ -5,7 +5,8 @@ USE IEEE.STD_LOGIC_1164.ALL;
 ENTITY HARVARD_PROCESSOR IS
   PORT (INT_SIGNAL, CLK, RESET: IN STD_LOGIC;
   OUT_PORT: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-  IN_PORT: IN STD_LOGIC_VECTOR(31 DOWNTO 0)
+  IN_PORT: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+  CARRY_FLAG, ZERO_FLAG, NEGATIVE_FLAG: OUT STD_LOGIC
   );
 END ENTITY HARVARD_PROCESSOR;
 
@@ -28,7 +29,9 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     PORT (INT_SIGNAL, JUMP_BIT, RETI_BIT, MEMORY_BIT,CLK: IN STD_LOGIC;
     JUMP_LOCATION, MEMORY_INSTR: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
   	INSTRUCTION, PC : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0);
-	  RESET : IN STD_LOGIC);
+    RESET : IN STD_LOGIC;
+    RESET_ADDRESS: IN  STD_LOGIC_VECTOR(31 DOWNTO 0) 
+    );
     
     END COMPONENT;
     
@@ -55,7 +58,9 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       CU_Set_Clr_Carry,CU_WriteEnableWB : OUT std_logic_vector(1 DOWNTO 0);
       CU_SPSel : OUT std_logic_vector(2 DOWNTO 0);
       CU_ALU_Selc : OUT std_logic_vector(3 DOWNTO 0);
-      OP1_ADDRESS, OP2_ADDRESS: OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
+      OP1_ADDRESS, OP2_ADDRESS: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+      REG_0_OUT,REG_1_OUT, REG_2_OUT, REG_3_OUT, REG_4_OUT, REG_5_OUT, REG_6_OUT, REG_7_OUT:OUT  STD_LOGIC_VECTOR(31 DOWNTO 0);
+      WRITE_DATA1_TO_REG : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
       );
 
     END COMPONENT;
@@ -81,6 +86,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     --IMPORTING THE EXECUTION UNIT
     COMPONENT ExecutingUnit IS 
       PORT(
+      CARRY_FLAG_OUT, ZERO_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
       WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
       MEM_IN: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
       WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
@@ -112,7 +118,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       FlagsRegisterOut: OUT std_logic_vector(3 DOWNTO 0);
       OutPort_Output: OUT std_logic_vector( 31 DOWNTO 0);
       Swap_Output: OUT std_logic_vector (31 DOWNTO 0);
-      Or_Output: OUT std_logic
+      Or_Output: OUT std_logic;
+      FORWARD_OP1,FORWARD_OP2: OUT STD_LOGIC
       );
     END COMPONENT;
 
@@ -159,7 +166,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       WB_INPort_Out : OUT std_logic;
       WB_RegPCOrMemPC_Out : OUT std_logic;
       RdstOrRsrc_OUT : OUT std_logic_vector(31 DOWNTO 0);	
-      Inst0to8_OUT : OUT std_logic_vector(8 DOWNTO 0)
+      Inst0to8_OUT : OUT std_logic_vector(8 DOWNTO 0);
+      RESET: IN STD_LOGIC
       );
     END COMPONENT;
 
@@ -260,6 +268,10 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     SIGNAL WB_WRITE_ENABLE_OUT_WIRE : STD_LOGIC_VECTOR(1 DOWNTO 0);
     SIGNAL WB_IN_ENABLE_OUT_WIRE, WB_FETCH_MEMORY_OUT_WIRE : STD_LOGIC;
 
+
+    --TESTING SIGNALS 
+    SIGNAL REG_0_TEST, REG_1_TEST, REG_2_TEST, REG_3_TEST, REG_4_TEST, REG_5_TEST, REG_6_TEST, REG_7_TEST ,WRITE_DATA1_TEST: STD_LOGIC_VECTOR(31 DOWNTO 0); 
+    SIGNAL FORWARD_OP1_TEST,FORWARD_OP2_TEST:  STD_LOGIC;
     
     BEGIN
 --********************************************************************************************************************************
@@ -277,7 +289,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
 
 
     ZERO_EXTENDER_FLAGS <= X"0000000" & EX_MEM_FLAGS_OUT_WIRE;
-    ZERO_EXTENDER_EFFECTIVE_ADDRESS <= X"0000" & EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE;
+    ZERO_EXTENDER_EFFECTIVE_ADDRESS <= X"00000" & '0' & EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE(10 DOWNTO 0);
 
 
 --********************************************************************************************************************************
@@ -307,7 +319,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                           WB_WRITE_BACK_DATA1_OUT_WIRE, --MEMORY LOCATION FROM MEM STAGE
                                           IF_ID_INST_IN_WIRE, --FETCHED INSTRUCTION
                                           IF_ID_PC_IN_WIRE,  --CURRENT PC
-                                          RESET   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
+                                          RESET,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
+					  MEM_WB_MEMORY_RESULT_IN_WIRE  
                                           );    
 
     --THE IF/ID INTERMEDIATE BUFFER
@@ -317,7 +330,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                         IF_ID_PC_IN_WIRE,  --CURRENT PC FROM FETCHING UNIT
                                         IF_ID_INST_IN_WIRE, --FETCHED INSTRUCTION FROM FETCHING UNIT
                                         IF_ID_INST_OUT_WIRE, --FETCHED INSTRUCTION OUTED WIRE
-                                        IF_ID_PC_OUT_WIRE--CURRENT PC OUTED WIRE
+                                        IF_ID_PC_OUT_WIRE--CURRENT PC OUTED WIRE                                   
                                         );
 
 -------------------------------------------------------------DECODEING---------------------------------------------
@@ -355,7 +368,16 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                         CS_MEM_SPSel,         --CONTROL SIGNAL STACK POINTER SELECTOR GOING TO MEM STAGE
                                         CS_EX_ALU_SEL,        --CONTROL SIGNAL ALU SELECTOR GOING TO EX STAGE
                                         ID_EX_OP1_ADDRESS_IN_WIRE,  --READ 1 SOURCE ADDRESS GOING TO INTERMEDIATE BUFFER
-                                        ID_EX_OP2_ADDRESS_IN_WIRE   --READ 2 SOURCE ADDRESS GOING TO INTERMEDIATE BUFFER
+                                        ID_EX_OP2_ADDRESS_IN_WIRE,   --READ 2 SOURCE ADDRESS GOING TO INTERMEDIATE BUFFER
+                                        REG_0_TEST, 
+                                        REG_1_TEST, 
+                                        REG_2_TEST, 
+                                        REG_3_TEST,
+                                        REG_4_TEST, 
+                                        REG_5_TEST, 
+                                        REG_6_TEST, 
+                                        REG_7_TEST,
+                                        WRITE_DATA1_TEST
                                         );
 
     --THE ID/EX INTERMEDIATE BUFFER
@@ -385,7 +407,10 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
 -------------------------------------------------------------EXECUTING---------------------------------------------
 
     --THE EXECUTING UNIT
-    EXECUTION_UNIT: ExecutingUnit PORT MAP ( ID_EX_WB_OUT_WIRE,
+    EXECUTION_UNIT: ExecutingUnit PORT MAP ( CARRY_FLAG, 
+                                              ZERO_FLAG, 
+                                              NEGATIVE_FLAG,
+                                              ID_EX_WB_OUT_WIRE,
                                               ID_EX_MEM_OUT_WIRE,
                                               EX_MEM_WB_IN_WIRE,
                                               EX_MEM_MEM_IN_WIRE,
@@ -405,10 +430,10 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               ID_EX_OP1_ADDRESS_OUT_WIRE,
                                               ID_EX_OP2_ADDRESS_OUT_WIRE,
                                               EX_MEM_INST_0_8_IN_WIRE(2 DOWNTO 0),    --RDST
-                                              EX_MEM_RESULT_OUT_WIRE,    --RESULT FROM MEMORY
+                                              EX_MEM_RESULT_OUT_WIRE,    --RESULT FROM MEMORY FOR flags
                                               EX_MEM_WB_OUT_WIRE(0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               MEM_WB_INST_0_8_IN_WIRE(2 DOWNTO 0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              WB_WRITE_BACK_DATA1_OUT_WIRE,     --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              MEM_WB_DESTINATION_OUT_WIRE,     --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               MEM_WB_WB_OUT_WIRE(0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               CLK,
                                               RESET,
@@ -419,7 +444,10 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               EX_MEM_FLAGS_IN_WIRE,
                                               OUT_PORT,
                                               EX_MEM_DESTINATION_IN_WIRE,
-                                              JUMP_BIT_OUT_WIRE);
+                                              JUMP_BIT_OUT_WIRE,
+                                              FORWARD_OP1_TEST,
+                                              FORWARD_OP2_TEST
+                                              );
 
     --THE EX/MEM INTERMEDIATE BUFFER
     EX_MEM_BUFFER: BOB_EX_MEM PORT MAP ( RESET,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
@@ -465,7 +493,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                         MEM_WB_WB_IN_WIRE(3),
                                         MEM_WB_WB_IN_WIRE(4),
                                         MEM_WB_DESTINATION_IN_WIRE,
-                                        MEM_WB_INST_0_8_IN_WIRE(8 DOWNTO 0)
+                                        MEM_WB_INST_0_8_IN_WIRE(8 DOWNTO 0),
+					                              RESET
                                         );
 
     --THE EX/MEM INTERMEDIATE BUFFER

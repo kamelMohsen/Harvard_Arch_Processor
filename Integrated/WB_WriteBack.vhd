@@ -27,6 +27,8 @@ COMPONENT WB_MUX2x1 IS
 	);
 END COMPONENT ;
 begin
+IN_EN_OUT <= IN_EN_IN;
+WRITE_ENABLE_OUT <= WRITE_ENABLE_IN;
 mux: WB_MUX2x1 PORT MAP(Result, DataRead1, Result_Mem_IN, WriteData);
 Ins6_8_OUT <= Ins6_8_IN;
 Ins2_0_OUT <= Ins2_0_IN;

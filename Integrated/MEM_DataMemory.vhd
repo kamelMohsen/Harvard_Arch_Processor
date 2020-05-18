@@ -9,7 +9,9 @@ PORT (Clk : IN std_logic;
       StackOrData : IN std_logic;
       Address : IN std_logic_vector(N-1 DOWNTO 0);
       DataIn : IN std_logic_vector(N-1 DOWNTO 0);
-      DataOut : OUT std_logic_vector(N-1 DOWNTO 0) );
+	  DataOut : OUT std_logic_vector(N-1 DOWNTO 0);
+	  RESET: IN STD_LOGIC
+	   );
 END ENTITY DataMemory;
 
 ARCHITECTURE sync_ram OF DataMemory IS
@@ -37,13 +39,13 @@ BEGIN
 					ram(IntegerAddress) <= DataIn(15 DOWNTO 0);
 					ram(IntegerAddressPlusOne) <= DataIn(N-1 DOWNTO 16);
 				END IF;
-
 			END IF;
 		END IF;
 	END PROCESS;
 	
-	DataOut <= ram(IntegerAddressPlusOne) & ram(IntegerAddress) WHEN StackOrData = '0' 
-	ELSE ram(IntegerAddressMinusOne) & ram(IntegerAddress) WHEN StackOrData = '1';
+	DataOut <= ram(IntegerAddressPlusOne) & ram(IntegerAddress) WHEN StackOrData = '0' AND RESET = '0' 
+	ELSE ram(IntegerAddressMinusOne) & ram(IntegerAddress) WHEN StackOrData = '1' AND RESET = '0'
+	ELSE ram(1) & ram(0) WHEN RESET = '1' ;
 	
 	
 

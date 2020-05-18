@@ -197,7 +197,7 @@ try:
             rsrc2 = sub_commands.pop(0)
             rdst = sub_commands.pop(0)
             output2_file.write(str(memory_location2) + ": ")
-            output2_file.write("0001011" + registers_dic[rsrc1] + registers_dic[rsrc2] + registers_dic[rdst] + "\n")
+            output2_file.write("0001100" + registers_dic[rsrc1] + registers_dic[rsrc2] + registers_dic[rdst] + "\n")
             memory_location2 += 1
         # ***************SHL OPERATION***************
         elif operation == "shl":

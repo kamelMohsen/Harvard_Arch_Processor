@@ -2,6 +2,7 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
 ENTITY ExecutingUnit IS PORT(
+CARRY_FLAG_OUT, ZERO_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
 --CONTROL SIGNALS-----
 WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
 MEM_IN: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
@@ -57,9 +58,10 @@ OutPort_Output: OUT std_logic_vector( 31 DOWNTO 0);
 Swap_Output: OUT std_logic_vector (31 DOWNTO 0);
 
 --Other Output
-Or_Output: OUT std_logic
+Or_Output: OUT std_logic;
 
 -- More Outputs still need to be specified when the buffers are implemented
+FORWARD_OP1,FORWARD_OP2: OUT STD_LOGIC
 
 );
 END ENTITY ExecutingUnit;
@@ -151,6 +153,13 @@ SIGNAL FROut: std_logic_vector(3 DOWNTO 0);
 SIGNAL And1_Out, And2_Out, And3_Out: std_logic;
 BEGIN
 
+CARRY_FLAG_OUT <=  ALU_Carry;
+ZERO_FLAG_OUT <= ALU_Zero; 
+NEGATIVE_FLAG_OUT <= ALU_Neg;
+
+WB_OUT <= WB_IN;
+MEM_OUT <= MEM_IN;
+
 Ext: Execute_ZeroExtender PORT MAP(ZERO_TO_THIRTY_ONE_IN(31 DOWNTO 16), ZeroExtendedSignal, Extender);
 
 FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
@@ -179,7 +188,8 @@ FORWARDING_UNIT: Execute_FWU PORT MAP (MEM_REG_WRITE, WB_REG_WRITE,
                                         FWUOUTPUT1, FWUOUTPUT2,
                                         M1_Sel, M2_Sel);
 
-
+                                        FORWARD_OP1 <= M1_Sel;
+                                        FORWARD_OP2 <= M2_Sel;
 END ExecutingUnit_ARCH;
 
 

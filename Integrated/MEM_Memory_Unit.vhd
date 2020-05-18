@@ -25,8 +25,8 @@ PORT (	RETI: IN STD_LOGIC;
 	WB_INPort_Out : OUT std_logic;
 	WB_RegPCOrMemPC_Out : OUT std_logic;
 	RdstOrRsrc_OUT : OUT std_logic_vector(N-1 DOWNTO 0);	
-	Inst0to8_OUT : OUT std_logic_vector(8 DOWNTO 0)		
-
+	Inst0to8_OUT : OUT std_logic_vector(8 DOWNTO 0);		
+	RESET: IN STD_LOGIC
 		);
 END ENTITY Memory_unit;
 
@@ -40,17 +40,21 @@ PORT (Clk : IN std_logic;
       StackOrData : IN std_logic;
       Address : IN std_logic_vector(N-1 DOWNTO 0);
       DataIn : IN std_logic_vector(N-1 DOWNTO 0);
-      DataOut : OUT std_logic_vector(N-1 DOWNTO 0) );
+	  DataOut : OUT std_logic_vector(N-1 DOWNTO 0);
+	  RESET: IN STD_LOGIC
+	   );
 END COMPONENT;
 
 -- Stack Pointer component
 COMPONENT StackPointer IS
 PORT (SPSel : IN std_logic_vector(2 downto 0);
-      Address : OUT std_logic_vector(31 DOWNTO 0) );
+	  Address : OUT std_logic_vector(10 DOWNTO 0);
+	  CLK,RESET: IN STD_LOGIC
+	   );
 END COMPONENT;
 
 SIGNAL Data,Address : std_logic_vector(N-1 DOWNTO 0);
-SIGNAL StackAddress :std_logic_vector(N-1 DOWNTO 0);
+SIGNAL StackAddress :std_logic_vector(10 DOWNTO 0);
 SIGNAL RETI_OR_INT : STD_LOGIC;
 BEGIN
 
@@ -67,8 +71,8 @@ WB_INPort_Out <= WB_INPort_IN;
 WB_RegPCOrMemPC_Out <= WB_RegPCOrMemPC_IN;
 --------------------------------------------
 
-Memory : DataMemory Generic MAP(N) PORT MAP (Clk,WriteEnable,StackOrData,Address,Data,DataRead);
-SP: StackPointer PORT MAP (SPSEL,StackAddress);
+Memory : DataMemory Generic MAP(N) PORT MAP (Clk,WriteEnable,StackOrData,Address,Data,DataRead, RESET);
+SP: StackPointer PORT MAP (SPSEL,StackAddress,Clk,RESET);
 
 RETI_OR_INT <= '0' WHEN RETI = '0' AND ResultOrFlags = '0'
 ELSE '1';
@@ -77,6 +81,6 @@ Data <= Result WHEN RETI_OR_INT = '0'
 ELSE  Flags WHEN RETI_OR_INT = '1';
 
 Address <= EA WHEN StackOrData = '0'
-ELSE StackAddress WHEN StackOrData = '1';
+ELSE X"00000" & '0' & StackAddress WHEN StackOrData = '1';
 
 END MEM_U; 
