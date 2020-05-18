@@ -222,6 +222,83 @@ try:
             output2_file.write(str(memory_location2) + ": ")
             output2_file.write("0001000" + registers_dic[rsrc1] + "000" + registers_dic[rdst] + "\n")
             memory_location2 += 1
+        #**************PUSH OPERATION****************
+        elif operation =="push":
+            rdst = sub_commands.pop(0)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0010000" + "000" + "000" + registers_dic[rdst] + "\n")
+            memory_location2 += 1
+        elif operation == "pop":
+            rdst = sub_commands.pop(0)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0010001"  + "000" + "000" + registers_dic[rdst] + "\n")
+            memory_location2 += 1
+        elif operation == "call":
+            rdst = sub_commands.pop(0)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0011000" + "000" + "000" + registers_dic[rdst] + "\n")
+            memory_location2 += 1
+        elif operation == "ret":
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0011000" + "000000000" "\n")
+            memory_location2 += 1
+        elif operation == "rti":
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0011010"  + "000000000" + "\n")
+            memory_location2 += 1
+        elif operation == "jz":
+            rdst = sub_commands.pop(0)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0100000" + "000" + "000" +  registers_dic[rdst] + "\n")
+            memory_location2 += 1
+        elif operation == "jn":
+            rdst = sub_commands.pop(0)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0100001" + "000" + "000" +  registers_dic[rdst] + "\n")
+            memory_location2 += 1
+        elif operation == "jc":
+            rdst = sub_commands.pop(0)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0100010" + "000" + "000" +  registers_dic[rdst] + "\n")
+            memory_location2 += 1
+        elif operation == "jmp":
+            rdst = sub_commands.pop(0)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("0100011" + "000" + "000" +  registers_dic[rdst] + "\n")
+            memory_location2 += 1
+        elif operation == "ldm":
+            rdst = sub_commands.pop(0)
+            immediate_value = sub_commands.pop(0)
+            hexa = bin(int(immediate_value, 16))[2:].zfill(16)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("1000001" + "000000 "+ registers_dic[rdst] +"\n")
+            memory_location2 += 1
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write(hexa + "\n")
+            memory_location2 += 1
+
+        elif operation == "ldd":
+            rdst = sub_commands.pop(0)
+            effectiveAddress = sub_commands.pop(0)
+            hexa = bin(int(effectiveAddress, 16))[2:].zfill(16)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("1000010" + "000000" +registers_dic[rdst] + "\n")
+            memory_location2 += 1
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write(hexa + "\n")
+            memory_location2 += 1
+
+        elif operation == "std":
+            rdst = sub_commands.pop(0)
+            effectiveAddress = sub_commands.pop(0)
+            hexa = bin(int(effectiveAddress, 16))[2:].zfill(16)
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write("1000011" + "000000" +registers_dic[rdst] + "\n")
+            memory_location2 += 1
+            output2_file.write(str(memory_location2) + ": ")
+            output2_file.write(hexa + "\n")
+            memory_location2 += 1
+
         else:
             try:
                 if org_counter > 2:
