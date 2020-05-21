@@ -240,7 +240,7 @@ try:
             memory_location2 += 1
         elif operation == "ret":
             output2_file.write(str(memory_location2) + ": ")
-            output2_file.write("0011000" + "000000000" "\n")
+            output2_file.write("0011001" + "000000000" "\n")
             memory_location2 += 1
         elif operation == "rti":
             output2_file.write(str(memory_location2) + ": ")

@@ -3,9 +3,9 @@ USE IEEE.std_logic_1164.all;
 --Remember popping flags from the memory might need write enable
 ENTITY Execute_FlagsRegister IS PORT 
 (
-    ZeroInput, NegativeInput, CarryInput: IN std_logic;
+    ZeroInput, NegativeInput, CarryInput,jmp_bit: IN std_logic;
     SETC: IN std_logic_vector(1 DOWNTO  0);
-    clk: IN std_logic;
+    clk,ENABLE: IN std_logic;
     rst: IN std_logic;
     ZeroReset, CarryReset, NegativeReset: IN std_logic;
     MemoryInput: IN std_logic_vector(3 DOWNTO 0);
@@ -44,9 +44,9 @@ ELSE NegativeInput;
 FlagsSignal(0) <= ZeroSignal;
 FlagsSignal(1) <= NegativeSignal;
 FlagsSignal(2) <= CarrySignal;
-FlagsSignal(3) <= '0';
+FlagsSignal(3) <= jmp_bit;
 
-Flag_Reg: Execute_DFF_4 PORT MAP(FlagsSignal, clk, rst, '1', REG_OUT);
+Flag_Reg: Execute_DFF_4 PORT MAP(FlagsSignal, clk, rst, ENABLE, REG_OUT);
 RegOut <= REG_OUT;
 
 

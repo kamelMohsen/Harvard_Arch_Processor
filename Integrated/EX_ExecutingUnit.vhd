@@ -59,10 +59,9 @@ Swap_Output: OUT std_logic_vector (31 DOWNTO 0);
 
 --Other Output
 Or_Output: OUT std_logic;
-
 -- More Outputs still need to be specified when the buffers are implemented
-FORWARD_OP1,FORWARD_OP2: OUT STD_LOGIC
-
+FORWARD_OP1,FORWARD_OP2: OUT STD_LOGIC;
+JUMP_LOCTION: OUT std_logic_vector( 31 DOWNTO 0)
 );
 END ENTITY ExecutingUnit;
 
@@ -80,9 +79,9 @@ COMPONENT Execute_ALU  IS PORT (
 END COMPONENT;
 
 COMPONENT Execute_FlagsRegister IS PORT (
-    ZeroInput, NegativeInput, CarryInput: IN std_logic;
+    ZeroInput, NegativeInput, CarryInput,jmp_bit: IN std_logic;
     SETC: IN std_logic_vector(1 DOWNTO  0);
-    clk: IN std_logic;
+    clk,ENABLE: IN std_logic;
     rst: IN std_logic;
     ZeroReset, CarryReset, NegativeReset: IN std_logic;
     MemoryInput: IN std_logic_vector(3 DOWNTO 0);
@@ -151,6 +150,7 @@ SIGNAL ZeroExtendedSignal: std_logic_vector(31 DOWNTO 0);
 SIGNAL ALU_Neg, ALU_Zero, ALU_Carry: std_logic;
 SIGNAL FROut: std_logic_vector(3 DOWNTO 0);
 SIGNAL And1_Out, And2_Out, And3_Out: std_logic;
+SIGNAL FLAG_WRITE, OR_OUT_WIRE: STD_LOGIC;
 BEGIN
 
 CARRY_FLAG_OUT <=  FROut(2);
@@ -162,24 +162,25 @@ MEM_OUT <= MEM_IN;
 
 Ext: Execute_ZeroExtender PORT MAP(ZERO_TO_THIRTY_ONE_IN(31 DOWNTO 16), ZeroExtendedSignal, Extender);
 
-FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
+FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry,OR_OUT_WIRE, SETC, clk,FLAG_WRITE, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
 
 Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk, OutPort_Output);
 
+JUMP_LOCTION <= M1Output;
 Mux1: Execute_MUX2x1 PORT MAP(Read1, FWUOUTPUT1 , '0', M1Output);--eftkr rag3 el fw ba3dain M1_Sel,M2_Sel
 Mux2: Execute_MUX2x1 PORT MAP(Read2, FWUOUTPUT2 , '0', M2Output);
 Mux3: Execute_MUX2x1 PORT MAP(PC, M1Output, M3_Sel, M3Output);
 Mux4: Execute_MUX2x1 PORT MAP(M2Output, ZeroExtendedSignal, M4_Sel, M4Output);
 
-ALU1: Execute_ALU PORT MAP(M3Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4), ALUSel, '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut);
+ALU1: Execute_ALU PORT MAP(M3Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4), ALUSel, '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut,FLAG_WRITE);
 ZERO_TO_EIGHT_OUT <=ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 0);
 Swap_Output <= M2Output;
 FlagsRegisterOut <= FROut;
 and1: Execute_TwoInputAnd PORT MAP(FROut(0), AND_INPUT1, And1_Out);
 and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);
 and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);
-
-or1: Execute_FourInputOr PORT MAP(And1_Out, And2_Out, And3_Out, Solo_Or_Input, Or_Output);
+Or_Output <= FROut(3);
+or1: Execute_FourInputOr PORT MAP(And1_Out, And2_Out, And3_Out, Solo_Or_Input, OR_OUT_WIRE);
 
 FORWARDING_UNIT: Execute_FWU PORT MAP (MEM_REG_WRITE, WB_REG_WRITE,
                                         MEM_DESTINATION_ADRESS,WB_DESTINATION_ADRESS,

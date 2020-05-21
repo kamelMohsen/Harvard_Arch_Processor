@@ -119,7 +119,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       OutPort_Output: OUT std_logic_vector( 31 DOWNTO 0);
       Swap_Output: OUT std_logic_vector (31 DOWNTO 0);
       Or_Output: OUT std_logic;
-      FORWARD_OP1,FORWARD_OP2: OUT STD_LOGIC
+      FORWARD_OP1,FORWARD_OP2: OUT STD_LOGIC;
+      JUMP_LOCTION: OUT std_logic_vector( 31 DOWNTO 0)
       );
     END COMPONENT;
 
@@ -257,8 +258,11 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
 
     --EXECUTION UNIT SIGNALS
     SIGNAL JUMP_BIT_OUT_WIRE: std_logic;
-   -- SIGNAL EXTENDED_IMM: STD_LOGIC_VECTOR(31 DOWNTO 0);
-
+    SIGNAL JUMP_LOCTION_EX_OUT: std_logic_vector( 31 DOWNTO 0);
+  
+    
+    --BUFFER RESET/JUMP SIGNAL 
+    SIGNAL RESET_OR_JUMP : STD_LOGIC; 
 
     --SIGNALS EXTRA BTFOK AZMAT FEL MEM
     SIGNAL ZERO_EXTENDER_FLAGS, ZERO_EXTENDER_EFFECTIVE_ADDRESS: STD_LOGIC_VECTOR(31 DOWNTO 0 );
@@ -316,16 +320,16 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                           '0',  --RETI BIT THAT COME FROM RETI UNIT (MISSING LESA MA ET3AMLSH)***&^$^$%^$%^$%%$#@!$#%^%%$#
                                           WB_FETCH_MEMORY_OUT_WIRE,  --MEMORY BIT THAT COMES FROM WB STAGE
                                           CLK,  --CLK ENTERED TO WHOLE PROCESSOR
-                                          X"00000000", --JUMP LOCATION FROM EX SATGE (MISSING LESA MA ET3AMLSH)***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                          JUMP_LOCTION_EX_OUT, --JUMP LOCATION FROM EX SATGE (MISSING LESA MA ET3AMLSH)***&^$^$%^$%^$%%$#@!$#%^%%$#
                                           WB_WRITE_BACK_DATA1_OUT_WIRE, --MEMORY LOCATION FROM MEM STAGE
                                           IF_ID_INST_IN_WIRE, --FETCHED INSTRUCTION
                                           IF_ID_PC_IN_WIRE,  --CURRENT PC
                                           RESET,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
-					  MEM_WB_MEMORY_RESULT_IN_WIRE  
+					                                MEM_WB_MEMORY_RESULT_IN_WIRE  
                                           );    
 
     --THE IF/ID INTERMEDIATE BUFFER
-    IF_ID_BUFFER: BOB_IF_ID PORT MAP (RESET, --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
+    IF_ID_BUFFER: BOB_IF_ID PORT MAP (RESET_OR_JUMP, --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
                                         '0', --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
                                         CLK,   --CLK ENTERED TO WHOLE PROCESSOR
                                         IF_ID_PC_IN_WIRE,  --CURRENT PC FROM FETCHING UNIT
@@ -382,7 +386,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                         );
 
     --THE ID/EX INTERMEDIATE BUFFER
-    ID_EX_BUFFER: BOB_ID_EX PORT MAP (RESET,
+    ID_EX_BUFFER: BOB_ID_EX PORT MAP (RESET_OR_JUMP,
                                         '0',
                                         CLK,
                                         ID_EX_PC_IN_WIRE, 
@@ -447,7 +451,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               EX_MEM_DESTINATION_IN_WIRE,
                                               JUMP_BIT_OUT_WIRE,
                                               FORWARD_OP1_TEST,
-                                              FORWARD_OP2_TEST
+                                              FORWARD_OP2_TEST,
+                                              JUMP_LOCTION_EX_OUT
                                               );
 
     --THE EX/MEM INTERMEDIATE BUFFER
@@ -539,4 +544,6 @@ WRITEBACK_UNITT: WriteBack PORT MAP (  MEM_WB_RESULT_OUT_WIRE,
 --********************************************************************************************************************************
 
   WB_INST_0_8_OUT_WIRE(5 DOWNTO 3) <= "000";
+  RESET_OR_JUMP <= '1' WHEN RESET = '1' OR JUMP_BIT_OUT_WIRE = '1'
+  ELSE '0';
 END HARVARD_PROCESSOR_ARCH;
