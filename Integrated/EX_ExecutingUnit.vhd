@@ -61,7 +61,12 @@ Swap_Output: OUT std_logic_vector (31 DOWNTO 0);
 Or_Output: OUT std_logic;
 -- More Outputs still need to be specified when the buffers are implemented
 FORWARD_OP1,FORWARD_OP2: OUT STD_LOGIC;
-JUMP_LOCTION: OUT std_logic_vector( 31 DOWNTO 0)
+FWU_OUTPUT1,FWU_OUTPUT2,JUMP_LOCTION: OUT std_logic_vector( 31 DOWNTO 0);
+IN_EN: IN STD_LOGIC;
+IN_PORT: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+MEM_SWAP_BIT,WB_SWAP_BIT : IN STD_LOGIC;
+MEM_SWAP_VALUE,WB_SWAP_VALUE :IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS:IN std_logic_vector(2 DOWNTO 0)
 );
 END ENTITY ExecutingUnit;
 
@@ -79,7 +84,7 @@ COMPONENT Execute_ALU  IS PORT (
 END COMPONENT;
 
 COMPONENT Execute_FlagsRegister IS PORT (
-    ZeroInput, NegativeInput, CarryInput,jmp_bit: IN std_logic;
+    ZeroInput, NegativeInput, CarryInput: IN std_logic;
     SETC: IN std_logic_vector(1 DOWNTO  0);
     clk,ENABLE: IN std_logic;
     rst: IN std_logic;
@@ -123,6 +128,7 @@ COMPONENT Execute_TwoInputAnd IS PORT (
 END COMPONENT;
 
 COMPONENT Execute_FourInputOr IS PORT (
+clk: IN std_logic;
 firstInput: IN std_logic;
 secondInput: IN std_logic;
 thirdInput:  IN std_logic;
@@ -139,18 +145,22 @@ COMPONENT Execute_FWU IS
         MEM_Destination_Address,WB_Destination_Address,EX_Destination_OP1_Address, EX_Destination_OP2_Address: IN std_logic_vector(2 DOWNTO 0);
         MEM_Destination_Data,WB_Destination_Data : IN std_logic_vector(31 DOWNTO 0);
         FW_OP1_Data, FW_OP2_Data : OUT std_logic_vector(31 DOWNTO 0);
-        FW_OP1_Enable, FW_OP2_Enable: OUT std_logic
+        FW_OP1_Enable, FW_OP2_Enable: OUT std_logic;
+        MEM_SWAP_BIT,WB_SWAP_BIT : IN STD_LOGIC;
+        MEM_SWAP_VALUE,WB_SWAP_VALUE :IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
+        MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS:IN std_logic_vector(2 DOWNTO 0)
     );
 END COMPONENT;
 
 SIGNAL M1_Sel,M2_Sel: std_logic;
 SIGNAL FWUOUTPUT1, FWUOUTPUT2:  std_logic_vector(31 DOWNTO 0); 
-SIGNAL M1Output, M2Output, M3Output, M4Output: std_logic_vector(31 DOWNTO 0);
+SIGNAL M1Output, M2Output, M3Output, M4Output,M5Output: std_logic_vector(31 DOWNTO 0);
 SIGNAL ZeroExtendedSignal: std_logic_vector(31 DOWNTO 0);
 SIGNAL ALU_Neg, ALU_Zero, ALU_Carry: std_logic;
 SIGNAL FROut: std_logic_vector(3 DOWNTO 0);
 SIGNAL And1_Out, And2_Out, And3_Out: std_logic;
 SIGNAL FLAG_WRITE, OR_OUT_WIRE: STD_LOGIC;
+
 BEGIN
 
 CARRY_FLAG_OUT <=  FROut(2);
@@ -162,35 +172,40 @@ MEM_OUT <= MEM_IN;
 
 Ext: Execute_ZeroExtender PORT MAP(ZERO_TO_THIRTY_ONE_IN(31 DOWNTO 16), ZeroExtendedSignal, Extender);
 
-FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry,OR_OUT_WIRE, SETC, clk,FLAG_WRITE, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
+FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk,FLAG_WRITE, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
 
 Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk, OutPort_Output);
 
 JUMP_LOCTION <= M1Output;
-Mux1: Execute_MUX2x1 PORT MAP(Read1, FWUOUTPUT1 , '0', M1Output);--eftkr rag3 el fw ba3dain M1_Sel,M2_Sel
-Mux2: Execute_MUX2x1 PORT MAP(Read2, FWUOUTPUT2 , '0', M2Output);
+Mux1: Execute_MUX2x1 PORT MAP(Read1, FWUOUTPUT1 , M1_Sel, M1Output);
+Mux2: Execute_MUX2x1 PORT MAP(Read2, FWUOUTPUT2 , M2_Sel, M2Output);
 Mux3: Execute_MUX2x1 PORT MAP(PC, M1Output, M3_Sel, M3Output);
 Mux4: Execute_MUX2x1 PORT MAP(M2Output, ZeroExtendedSignal, M4_Sel, M4Output);
+Mux5: Execute_MUX2x1 PORT MAP(M3Output, IN_PORT, IN_EN, M5Output);
 
-ALU1: Execute_ALU PORT MAP(M3Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4), ALUSel, '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut,FLAG_WRITE);
+ALU1: Execute_ALU PORT MAP(M5Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4), ALUSel, '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut,FLAG_WRITE);
 ZERO_TO_EIGHT_OUT <=ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 0);
 Swap_Output <= M2Output;
 FlagsRegisterOut <= FROut;
 and1: Execute_TwoInputAnd PORT MAP(FROut(0), AND_INPUT1, And1_Out);
 and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);
 and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);
-Or_Output <= FROut(3);
-or1: Execute_FourInputOr PORT MAP(And1_Out, And2_Out, And3_Out, Solo_Or_Input, OR_OUT_WIRE);
+or1: Execute_FourInputOr PORT MAP(clk,And1_Out, And2_Out, And3_Out, Solo_Or_Input, Or_Output);
 
 FORWARDING_UNIT: Execute_FWU PORT MAP (MEM_REG_WRITE, WB_REG_WRITE,
                                         MEM_DESTINATION_ADRESS,WB_DESTINATION_ADRESS,
                                         OP1_ADDRESS, OP2_ADDRESS,
                                         MEM_DESTINATION_DATA,WB_DESTINATION_DATA,
                                         FWUOUTPUT1, FWUOUTPUT2,
-                                        M1_Sel, M2_Sel);
+                                        M1_Sel, M2_Sel,
+                                        MEM_SWAP_BIT,WB_SWAP_BIT,
+                                        MEM_SWAP_VALUE,WB_SWAP_VALUE,
+                                        MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS);
 
                                         FORWARD_OP1 <= M1_Sel;
                                         FORWARD_OP2 <= M2_Sel;
+                                        FWU_OUTPUT1 <=FWUOUTPUT1;
+                                        FWU_OUTPUT2 <=FWUOUTPUT2;
 END ExecutingUnit_ARCH;
 
 

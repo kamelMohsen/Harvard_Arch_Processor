@@ -36,12 +36,13 @@ begin
     ELSE Rsrc2Signal WHEN ALU_SEL = "1011"; --pass Source2
     Zero <= '1' WHEN tempOut(31 DOWNTO 0) = "00000000000000000000000000000000" AND ALU_SEL /= "0000" 	--if the ALU is not disabled and the result of the operation is zero, set the zero flag.
     ELSE '0';
-    Negative <= '1' WHEN tempOut(31) = '1' AND ALU_SEL /= "0000" 	--set Negative flag if the most significant bit of the result is 1
+    Negative <= '1' WHEN tempOut(31) = '1' AND (ALU_SEL /= "0000" OR ALU_SEL /= "0011")	--set Negative flag if the most significant bit of the result is 1
     ELSE '0'; 
-    FlagsRegisterEnable <= '0' when ALU_SEL = "0000"
+    FlagsRegisterEnable <= '0' when ALU_SEL = "0000" OR ALU_SEL = "0011"
     ELSE '1';
-    Carry <= '1' WHEN  tempOut(32) = '1'
-    ELSE '0' WHEN ALU_SEL /= "1000";	
+    Carry <= '1' WHEN  tempOut(32) = '1' AND (ALU_SEL /= "1000" OR ALU_SEL /= "0011")
+    ELSE '0' ;
+
     Result <= tempOut(31 DOWNTO 0); --set the result to tempOut
     
 END Execute_ALU_ARCH;

@@ -1,8 +1,16 @@
 .DS_Store
+Integrated/.DS_Store
 *.vhd.bak
+Integrated/*.vhd.bak
 *.cr.mti
+Integrated/*.cr.mti
 *.mpf
+Integrated/*.mpf
 transcript
+Integrated/transcript
 *.wlf
+Integrated/*.wlf
 Header
+Integrated/Header
 work
+Integrated/work

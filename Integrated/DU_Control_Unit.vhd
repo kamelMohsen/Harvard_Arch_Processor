@@ -181,7 +181,7 @@ BEGIN
 				Set_Clr_Carry <= "00";
 				Reg_IMM <= '0';
 				PC_Reg <= '0';
-				ALU_Selc <= "0000";
+				ALU_Selc <= "0011";
 			--======Memory=====--
 				Data_Stack <= '0';
 				SPSel <=  "000";
@@ -732,6 +732,11 @@ BEGIN
 				Call <= '0';
 				RETI <= '0';
 				INT <= '0';
+			--=====WriteBack====--
+				Result_Mem <= '1';
+				WriteEnableWB <= "01";
+				INN <= '0';
+				RegPC_MemPC <= '0';
 			END IF;
 
 		END IF;

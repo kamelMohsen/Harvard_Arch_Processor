@@ -6,7 +6,7 @@ ENTITY HARVARD_PROCESSOR IS
   PORT (INT_SIGNAL, CLK, RESET: IN STD_LOGIC;
   OUT_PORT: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
   IN_PORT: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-  CARRY_FLAG, ZERO_FLAG, NEGATIVE_FLAG: OUT STD_LOGIC
+  CARRY_FLAG, ZERO_FLAG, NEGATIVE_FLAG,FW1,FW2: OUT STD_LOGIC
   );
 END ENTITY HARVARD_PROCESSOR;
 
@@ -120,7 +120,12 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       Swap_Output: OUT std_logic_vector (31 DOWNTO 0);
       Or_Output: OUT std_logic;
       FORWARD_OP1,FORWARD_OP2: OUT STD_LOGIC;
-      JUMP_LOCTION: OUT std_logic_vector( 31 DOWNTO 0)
+      FWU_OUTPUT1,FWU_OUTPUT2,JUMP_LOCTION: OUT std_logic_vector( 31 DOWNTO 0);
+      IN_EN: IN STD_LOGIC;
+      IN_PORT: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+      MEM_SWAP_BIT,WB_SWAP_BIT : STD_LOGIC;
+      MEM_SWAP_VALUE,WB_SWAP_VALUE : STD_LOGIC_VECTOR(31 DOWNTO 0);
+      MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS:IN std_logic_vector(2 DOWNTO 0)
       );
     END COMPONENT;
 
@@ -278,6 +283,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     SIGNAL REG_0_TEST, REG_1_TEST, REG_2_TEST, REG_3_TEST, REG_4_TEST, REG_5_TEST, REG_6_TEST, REG_7_TEST ,WRITE_DATA1_TEST: STD_LOGIC_VECTOR(31 DOWNTO 0); 
     SIGNAL FORWARD_OP1_TEST,FORWARD_OP2_TEST:  STD_LOGIC;
     SIGNAL DATA_MEM_IN_TEST, DATA_MEM_ADDRESS_TEST: STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL FWU_OUTPUT1_TEST,FWU_OUTPUT2_TEST: STD_LOGIC_VECTOR(31 DOWNTO 0);
     BEGIN
 --********************************************************************************************************************************
 --*********************************************************DONE_DECALRING_SIGNALS*************************************************
@@ -434,11 +440,11 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               ID_EX_INST_OUT_WIRE(31 DOWNTO 0),
                                               ID_EX_OP1_ADDRESS_OUT_WIRE,
                                               ID_EX_OP2_ADDRESS_OUT_WIRE,
-                                              EX_MEM_INST_0_8_IN_WIRE(2 DOWNTO 0),    --RDST
+                                              EX_MEM_INST_0_8_OUT_WIRE(2 DOWNTO 0),    --RDST
                                               EX_MEM_RESULT_OUT_WIRE,    --RESULT FROM MEMORY FOR flags
                                               EX_MEM_WB_OUT_WIRE(0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              MEM_WB_INST_0_8_IN_WIRE(2 DOWNTO 0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
-                                              MEM_WB_DESTINATION_OUT_WIRE,     --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              MEM_WB_INST_0_8_OUT_WIRE(2 DOWNTO 0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                              WB_WRITE_BACK_DATA1_OUT_WIRE,     --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               MEM_WB_WB_OUT_WIRE(0),    --***&^$^$%^$%^$%%$#@!$#%^%%$#
                                               CLK,
                                               RESET,
@@ -450,9 +456,20 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
                                               OUT_PORT,
                                               EX_MEM_DESTINATION_IN_WIRE,
                                               JUMP_BIT_OUT_WIRE,
-                                              FORWARD_OP1_TEST,
-                                              FORWARD_OP2_TEST,
-                                              JUMP_LOCTION_EX_OUT
+                                              FW1,
+                                              FW2,
+                                              FWU_OUTPUT1_TEST,
+                                              FWU_OUTPUT2_TEST,
+                                              JUMP_LOCTION_EX_OUT,
+                                              ID_EX_WB_OUT_WIRE(3),
+                                              IN_PORT,
+                                              EX_MEM_WB_OUT_WIRE(1),
+                                              MEM_WB_WB_OUT_WIRE(1),
+                                              EX_MEM_DESTINATION_OUT_WIRE,
+                                              MEM_WB_DESTINATION_OUT_WIRE,
+                                              EX_MEM_INST_0_8_OUT_WIRE(8 DOWNTO 6),
+                                              MEM_WB_INST_0_8_OUT_WIRE(8 DOWNTO 6)
+                                              
                                               );
 
     --THE EX/MEM INTERMEDIATE BUFFER
