@@ -59,11 +59,11 @@ SIGNAL Enable1_Rdst_Rsrc1,Enable2_Rdst_Rsrc2 :std_logic;
 BEGIN
 
 WRITE_DATA1_TO_REG <= Mux3_WriteData1;
-RegisterFile: DECODER_RegisterFile PORT MAP (Mux3_WriteData1,WrtieBack_WriteData2,Mux1_Rsrc1,Mux2_Rsrc2,WrtieBack_WriteAddress1,WrtieBack_WriteAddress2,WriteEnable_RegisterFile,CLOCK_ALL,Reset_Registers,RegisterFile_Read1,RegisterFile_Read2,REG_0_OUT,REG_1_OUT, REG_2_OUT, REG_3_OUT, REG_4_OUT, REG_5_OUT, REG_6_OUT, REG_7_OUT);
+RegisterFile: DECODER_RegisterFile PORT MAP (Result,WrtieBack_WriteData2,Mux1_Rsrc1,Mux2_Rsrc2,WrtieBack_WriteAddress1,WrtieBack_WriteAddress2,WriteEnable_RegisterFile,CLOCK_ALL,Reset_Registers,RegisterFile_Read1,RegisterFile_Read2,REG_0_OUT,REG_1_OUT, REG_2_OUT, REG_3_OUT, REG_4_OUT, REG_5_OUT, REG_6_OUT, REG_7_OUT);
 ControlUnit: DECODER_ControlUnit PORT MAP (Fetch_Instruction,CLOCK_ALL,CU_Jmp,CU_OUTT,CU_Branch,CU_Reg_IMM,CU_PC_Reg,CU_Data_Stack,CU_WriteEnableMemory,CU_Call,CU_RETI,CU_Result_Mem,CU_INN,CU_RegPC_MemPC,Enable1_Rdst_Rsrc1,Enable2_Rdst_Rsrc2,INT,CU_Set_Clr_Carry,CU_WriteEnableWB,CU_SPSel,CU_ALU_Selc);
 Mux1: DECODER_mux GENERIC MAP (3) PORT MAP (Fetch_Instruction(8 DOWNTO 6),Fetch_Instruction(2 DOWNTO 0),Enable1_Rdst_Rsrc1,Mux1_Rsrc1);
 Mux2: DECODER_mux GENERIC MAP (3) PORT MAP (Fetch_Instruction(5 DOWNTO 3),Fetch_Instruction(2 DOWNTO 0),Enable2_Rdst_Rsrc2,Mux2_Rsrc2);
-Mux3: DECODER_mux GENERIC MAP (32) PORT MAP (INPORT,Result,IN_Enable,Mux3_WriteData1);
+--Mux3: DECODER_mux GENERIC MAP (32) PORT MAP (INPORT,Result,IN_Enable,Mux3_WriteData1);
 
 OP1_ADDRESS <= Mux1_Rsrc1;
 OP2_ADDRESS <= Mux2_Rsrc2;

@@ -50,15 +50,16 @@ sim:/harvard_processor/REG_3_TEST \
 sim:/harvard_processor/REG_4_TEST \
 sim:/harvard_processor/REG_5_TEST \
 sim:/harvard_processor/REG_6_TEST \
-sim:/harvard_processor/CARRY_FLAG \
-sim:/harvard_processor/NEGATIVE_FLAG \
-sim:/harvard_processor/ZERO_FLAG 
+sim:/harvard_processor/ZERO_EXTENDER_EFFECTIVE_ADDRESS \
+sim:/harvard_processor/EX_MEM_MEM_OUT_WIRE \
+sim:/harvard_processor/EX_MEM_EFFECTIVE_ADDRESS_IN_WIRE \
+sim:/harvard_processor/IF_ID_INST_IN_WIRE
 force -freeze sim:/harvard_processor/IN_PORT 32'h0000000b 0
 force -freeze sim:/harvard_processor/RESET 1 0
 force -freeze sim:/harvard_processor/INT_SIGNAL 0 0
 force -freeze sim:/harvard_processor/CLK 1 0, 0 {50 ns} -r 100
-mem load -i {F:/Tech/CUFE_CHS/Spring 2020/Architecture/Project/Harvard_Arch_Processor/TestCases/OneOperandData.mem} /harvard_processor/MEMORY_UNITT/Memory/ram
-mem load -i {F:/Tech/CUFE_CHS/Spring 2020/Architecture/Project/Harvard_Arch_Processor/TestCases/OneOperandInstruction.mem} /harvard_processor/FETCHING_UNIT/INST_MEM/ram
+mem load -i {F:/Tech/CUFE_CHS/Spring 2020/Architecture/Project/Harvard_Arch_Processor/TestCases/TestData.mem} /harvard_processor/MEMORY_UNITT/Memory/ram
+mem load -i {F:/Tech/CUFE_CHS/Spring 2020/Architecture/Project/Harvard_Arch_Processor/TestCases/TestInstruction.mem} /harvard_processor/FETCHING_UNIT/INST_MEM/ram
 run
 force -freeze sim:/harvard_processor/RESET 0 0
 run 

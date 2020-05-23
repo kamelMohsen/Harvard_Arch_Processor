@@ -271,7 +271,7 @@ try:
             immediate_value = sub_commands.pop(0)
             hexa = bin(int(immediate_value, 16))[2:].zfill(16)
             output2_file.write(str(memory_location2) + ": ")
-            output2_file.write("1000001" + "000000 "+ registers_dic[rdst] +"\n")
+            output2_file.write("1000001" + "000000"+ registers_dic[rdst] +"\n")
             memory_location2 += 1
             output2_file.write(str(memory_location2) + ": ")
             output2_file.write(hexa + "\n")

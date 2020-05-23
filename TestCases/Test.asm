@@ -5,19 +5,11 @@
 200
 .ORG 0B
 IN R1 
-ADD R1,R1,R2
-SUB R2,R1,R3
-SWAP R1,R0
-NOT R4
-INC R4
-DEC R4
-OUT R4
-OR R1,R4,R1
-AND R4,R5,R4
-SHL R1,02
-SHR R1,01
-PUSH R1
-POP R6
-NOP
-SETC
-JC R3
+iadd r1,r1,01
+ldm r2,05
+nop
+nop
+std r2,000
+nop
+nop
+ldd r3,000

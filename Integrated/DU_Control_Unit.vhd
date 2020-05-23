@@ -714,7 +714,7 @@ BEGIN
 				RegPC_MemPC <= '0';
 			ELSIF(Instruction(11 DOWNTO 9)="011") THEN
 			--=====Decoder=======--
-				Rdst_Rsrc1 <= '1';
+				Rdst_Rsrc1 <= '0';
 				Rdst_Rsrc2 <= '0';
 			--=======Execute=====--
 				Jmp <= '0';
@@ -734,7 +734,7 @@ BEGIN
 				INT <= '0';
 			--=====WriteBack====--
 				Result_Mem <= '1';
-				WriteEnableWB <= "01";
+				WriteEnableWB <= "00";
 				INN <= '0';
 				RegPC_MemPC <= '0';
 			END IF;
