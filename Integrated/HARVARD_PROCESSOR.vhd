@@ -54,7 +54,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       WrtieBack_WriteAddress1,WrtieBack_WriteAddress2: IN std_logic_vector(2 DOWNTO 0); 
       CLOCK_ALL,Reset_Registers,IN_Enable: IN std_logic;
       RegisterFile_Read1,RegisterFile_Read2,Decode_instruction,PC_out: OUT std_logic_vector(31 DOWNTO 0);
-      MEM_READ_EN_OUT,CU_Jmp,CU_OUTT,CU_Branch,CU_Reg_IMM,CU_PC_Reg,CU_Data_Stack,CU_WriteEnableMemory,CU_Call,CU_RETI,CU_Result_Mem,CU_INN,CU_RegPC_MemPC,INT: OUT std_logic;
+      MEM_READ_EN_OUT,CU_Jmp,CU_OUTT,CU_JZ_OUT,CU_JN_OUT,CU_JC_OUT,CU_Reg_IMM,CU_PC_Reg,CU_Data_Stack,CU_WriteEnableMemory,CU_Call,CU_RETI,CU_Result_Mem,CU_INN,CU_RegPC_MemPC,INT: OUT std_logic;
       CU_Set_Clr_Carry,CU_WriteEnableWB : OUT std_logic_vector(1 DOWNTO 0);
       CU_SPSel : OUT std_logic_vector(2 DOWNTO 0);
       CU_ALU_Selc : OUT std_logic_vector(3 DOWNTO 0);
@@ -75,10 +75,10 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       READ1_ADDRESS_OUT, READ2_ADDRESS_OUT: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
       WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
       MEM_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
-      EX_IN: IN STD_LOGIC_VECTOR(10 DOWNTO 0);
+      EX_IN: IN STD_LOGIC_VECTOR(12 DOWNTO 0);
       WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
       MEM_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
-      EX_OUT: OUT STD_LOGIC_VECTOR(10 DOWNTO 0);
+      EX_OUT: OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
       INST_OUT, PC_OUT, READ1_OUT, READ2_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0));
     
     END COMPONENT;
@@ -244,7 +244,7 @@ END COMPONENT;
     SIGNAL ID_EX_Read1_IN_WIRE,ID_EX_Read2_IN_WIRE,ID_EX_INST_IN_WIRE,ID_EX_PC_IN_WIRE,ID_EX_Read1_OUT_WIRE,ID_EX_Read2_OUT_WIRE,ID_EX_INST_OUT_WIRE,ID_EX_PC_OUT_WIRE: std_logic_vector(31 DOWNTO 0);
     SIGNAL ID_EX_WB_OUT_WIRE: std_logic_vector(4 DOWNTO 0);
     SIGNAL ID_EX_MEM_OUT_WIRE: std_logic_vector(8 DOWNTO 0);
-    SIGNAL ID_EX_EX_OUT_WIRE: std_logic_vector(10 DOWNTO 0);
+    SIGNAL ID_EX_EX_OUT_WIRE: std_logic_vector(12 DOWNTO 0);
     SIGNAL ID_EX_OP1_ADDRESS_IN_WIRE, ID_EX_OP2_ADDRESS_IN_WIRE, ID_EX_OP1_ADDRESS_OUT_WIRE, ID_EX_OP2_ADDRESS_OUT_WIRE : std_logic_vector(2 DOWNTO 0); 
     --EX/MEM
     SIGNAL EX_MEM_DESTINATION_IN_WIRE,EX_MEM_DESTINATION_OUT_WIRE, EX_MEM_RESULT_IN_WIRE,EX_MEM_RESULT_OUT_WIRE,EX_MEM_READ1_IN_WIRE,EX_MEM_READ1_OUT_WIRE: STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -262,13 +262,13 @@ END COMPONENT;
     --CONCATENATED SIGNALS
     SIGNAL CAT_ID_EX_WB: std_logic_vector(4 DOWNTO 0);
     SIGNAL CAT_ID_EX_MEM: std_logic_vector(8 DOWNTO 0);
-    SIGNAL CAT_ID_EX_EX: std_logic_vector(10 DOWNTO 0);
+    SIGNAL CAT_ID_EX_EX: std_logic_vector(12 DOWNTO 0);
 
 
     --CONTROL SIGNALS
     SIGNAL CS_EX_ALU_SEL: STD_LOGIC_VECTOR(3 DOWNTO 0);
     SIGNAL CS_EX_Set_Clr_Carry: std_logic_vector(1 DOWNTO 0);
-    SIGNAL CS_EX_Jmp,CS_EX_OUT,CS_EX_Branch,CS_EX_Reg_IMM,CS_EX_PC_Reg:std_logic;
+    SIGNAL CS_EX_Jmp,CS_EX_OUT,CS_EX_Branch,CS_EX_Reg_IMM,CS_EX_PC_Reg,CS_EX_JZ,CS_EX_JN,CS_EX_JC:std_logic;
     SIGNAL CS_MEM_SPSel: std_logic_vector(2 DOWNTO 0);
     SIGNAL CS_MEM_Data_Stack,CS_MEM_WriteEnableMemory,CS_MEM_Call,CS_MEM_RETI,CS_MEM_INT,CS_MEM_READ_ENABLE: std_logic;
     SIGNAL CS_WB_WriteEnable: std_logic_vector(1 DOWNTO 0);
@@ -318,7 +318,7 @@ END COMPONENT;
     CAT_ID_EX_MEM <= (CS_MEM_READ_ENABLE & CS_MEM_INT & CS_MEM_RETI & CS_MEM_Call & CS_MEM_WriteEnableMemory & CS_MEM_Data_Stack & CS_MEM_SPSel) WHEN HAZARD_OUT = '0'
     ELSE "000000000" WHEN HAZARD_OUT = '1';--MEM = (0-2 -> SPSEL) & (3 -> DATA_STACK) & (4 -> WRITE_ENABLE_MEMORY) & (5 -> CALL) & (6 -> RETI) & (7 -> INT) & (8 -> READ ENABLE)
     
-    CAT_ID_EX_EX <= (CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_Branch & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL) WHEN HAZARD_OUT = '0'
+    CAT_ID_EX_EX <= (CS_EX_JC & CS_EX_JN & CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_JZ & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL) WHEN HAZARD_OUT = '0'
     ELSE "00000000000" WHEN HAZARD_OUT = '1';--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> BRANCH) & (9 -> REG_IMM) & (10 -> PC_REG)
 
 
@@ -392,7 +392,9 @@ END COMPONENT;
                                         CS_MEM_READ_ENABLE,
                                         CS_EX_Jmp,        --CONTROL SIGNAL JMP GOING TO EX STAGE
                                         CS_EX_OUT,        --CONTROL SIGNAL OUT GOING TO EX STAGE
-                                        CS_EX_Branch,      --CONTROL SIGNAL BRANCH GOING TO EX STAGE
+                                        CS_EX_JZ,
+                                        CS_EX_JN,
+                                        CS_EX_JC,      --CONTROL SIGNAL BRANCH GOING TO EX STAGE
                                         CS_EX_Reg_IMM,      --CONTROL SIGNAL REG OR IMM GOING TO EX STAGE
                                         CS_EX_PC_Reg,       --CONTROL SIGNAL PC OR REG GOING TO EX STAGE
                                         CS_MEM_Data_Stack,    --CONTROL SIGNAL DATA OR STACK GOING TO MEM STAGE
@@ -463,8 +465,8 @@ END COMPONENT;
                                               ID_EX_EX_OUT_WIRE(10), 
                                               ID_EX_EX_OUT_WIRE(9),
                                               ID_EX_EX_OUT_WIRE(8), 
-                                              ID_EX_EX_OUT_WIRE(8), 
-                                              ID_EX_EX_OUT_WIRE(8),
+                                              ID_EX_EX_OUT_WIRE(11), 
+                                              ID_EX_EX_OUT_WIRE(12),
                                               ID_EX_EX_OUT_WIRE(6),
                                               ID_EX_INST_OUT_WIRE(31 DOWNTO 0),
                                               ID_EX_OP1_ADDRESS_OUT_WIRE,
@@ -605,6 +607,18 @@ WRITEBACK_UNITT: WriteBack PORT MAP (  MEM_WB_RESULT_OUT_WIRE,
   ELSE '0';
 
 
-  JUMP_OR_CALL <= EX_MEM_READ1_OUT_WIRE WHEN CALL_CLEAR = '1'
-  ELSE JUMP_LOCTION_EX_OUT;
-END HARVARD_PROCESSOR_ARCH;
+
+  PROCESS(CLK,EX_MEM_READ1_OUT_WIRE,JUMP_LOCTION_EX_OUT)
+    BEGIN
+      
+    IF FALLING_EDGE(CLK) THEN
+
+      IF CALL_CLEAR = '1' THEN
+        JUMP_OR_CALL <= EX_MEM_READ1_OUT_WIRE;
+      else
+        JUMP_OR_CALL <= JUMP_LOCTION_EX_OUT;
+      END IF;
+    END IF;
+      END PROCESS;
+
+    END HARVARD_PROCESSOR_ARCH;

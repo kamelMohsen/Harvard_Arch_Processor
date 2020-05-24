@@ -180,6 +180,7 @@ sim:/harvard_processor/IF_ID_PC_IN_WIRE \
 sim:/harvard_processor/JUMP_OR_CALL \
 sim:/harvard_processor/JUMP_CALL_BIT \
 sim:/harvard_processor/FWU_OUTPUT1_TEST \
+sim:/harvard_processor/JUMP_LOCTION_EX_OUT \
 sim:/harvard_processor/OUT_PORT \
 sim:/harvard_processor/REG_0_TEST \
 sim:/harvard_processor/REG_1_TEST \
