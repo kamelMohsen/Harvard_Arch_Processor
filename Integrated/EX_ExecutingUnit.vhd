@@ -5,9 +5,9 @@ ENTITY ExecutingUnit IS PORT(
 CARRY_FLAG_OUT, ZERO_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
 --CONTROL SIGNALS-----
 WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-MEM_IN: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+MEM_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
 WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
-MEM_OUT: OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+MEM_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
 ------------------------------------INPUT--------------------------------------------------
 --An output from the buffer should be going to the fetch stage
 --Buffer Outputs
@@ -66,7 +66,8 @@ IN_EN: IN STD_LOGIC;
 IN_PORT: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 MEM_SWAP_BIT,WB_SWAP_BIT : IN STD_LOGIC;
 MEM_SWAP_VALUE,WB_SWAP_VALUE :IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS:IN std_logic_vector(2 DOWNTO 0)
+MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS:IN std_logic_vector(2 DOWNTO 0);
+READ1_OUT:OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
 );
 END ENTITY ExecutingUnit;
 
@@ -141,7 +142,7 @@ END COMPONENT;
 COMPONENT Execute_FWU IS 
     PORT 
     (
-        MEM_REG_WRITE, WB_REG_WRITE: IN STD_LOGIC;
+        CLK,MEM_REG_WRITE, WB_REG_WRITE: IN STD_LOGIC;
         MEM_Destination_Address,WB_Destination_Address,EX_Destination_OP1_Address, EX_Destination_OP2_Address: IN std_logic_vector(2 DOWNTO 0);
         MEM_Destination_Data,WB_Destination_Data : IN std_logic_vector(31 DOWNTO 0);
         FW_OP1_Data, FW_OP2_Data : OUT std_logic_vector(31 DOWNTO 0);
@@ -177,6 +178,7 @@ FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk,FLAG
 Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk, OutPort_Output);
 
 JUMP_LOCTION <= M1Output;
+READ1_OUT <= READ1;
 Mux1: Execute_MUX2x1 PORT MAP(Read1, FWUOUTPUT1 , M1_Sel, M1Output);
 Mux2: Execute_MUX2x1 PORT MAP(Read2, FWUOUTPUT2 , M2_Sel, M2Output);
 Mux3: Execute_MUX2x1 PORT MAP(PC, M1Output, M3_Sel, M3Output);
@@ -192,7 +194,7 @@ and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);
 and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);
 or1: Execute_FourInputOr PORT MAP(clk,And1_Out, And2_Out, And3_Out, Solo_Or_Input, Or_Output);
 
-FORWARDING_UNIT: Execute_FWU PORT MAP (MEM_REG_WRITE, WB_REG_WRITE,
+FORWARDING_UNIT: Execute_FWU PORT MAP (clk,MEM_REG_WRITE, WB_REG_WRITE,
                                         MEM_DESTINATION_ADRESS,WB_DESTINATION_ADRESS,
                                         OP1_ADDRESS, OP2_ADDRESS,
                                         MEM_DESTINATION_DATA,WB_DESTINATION_DATA,

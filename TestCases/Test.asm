@@ -4,12 +4,12 @@
 100
 200
 .ORG 0B
-IN R1 
-iadd r1,r1,01
-ldm r2,05
-nop
-nop
-std r2,000
-nop
-nop
-ldd r3,000
+LDM R0,13
+LDM R1,AA
+CALL R0
+DEC R0
+DEC R0
+JMP R1
+INC R0
+INC R0
+RET

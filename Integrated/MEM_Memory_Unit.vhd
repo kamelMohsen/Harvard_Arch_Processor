@@ -27,7 +27,9 @@ PORT (	RETI: IN STD_LOGIC;
 	RdstOrRsrc_OUT : OUT std_logic_vector(N-1 DOWNTO 0);	
 	Inst0to8_OUT : OUT std_logic_vector(8 DOWNTO 0);		
 	RESET: IN STD_LOGIC;
-	TEST_MEM_ADDRESS_IN, TEST_MEM_DATA_IN: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+	TEST_MEM_ADDRESS_IN, TEST_MEM_DATA_IN: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+	CALL_IN : IN STD_LOGIC;
+	CALL_CLEAR_OUT : OUT STD_LOGIC
 		);
 END ENTITY Memory_unit;
 
@@ -58,6 +60,19 @@ SIGNAL Data,Address : std_logic_vector(N-1 DOWNTO 0);
 SIGNAL StackAddress :std_logic_vector(10 DOWNTO 0);
 SIGNAL RETI_OR_INT : STD_LOGIC;
 BEGIN
+
+PROCESS(Clk)
+	begin
+		IF FALLING_EDGE(Clk) THEN
+			IF CALL_IN = '1' THEN
+				CALL_CLEAR_OUT <= '1';
+			else
+				CALL_CLEAR_OUT <= '0';
+			END IF;
+				
+		END IF;
+end PROCESS;
+
 
 -- Transition from Exec to WB
 Result_OUT <= Result;
