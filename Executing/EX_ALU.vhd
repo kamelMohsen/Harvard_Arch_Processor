@@ -8,7 +8,7 @@ ENTITY Execute_ALU IS PORT(
     Rsrc1, Rsrc2: IN std_logic_vector( 31 DOWNTO 0);    --Source1 and Source2
     Instr: IN std_logic_vector( 4 DOWNTO 0);    	--Shift Amount
     ALU_Sel: IN std_logic_vector(3 DOWNTO 0);   	-- Operation Selector
-    Stall: IN std_logic; 				-- Stall --NOT IMPLEMENTED YET
+    ZF,NF,CF,Stall: IN std_logic; 				-- Stall --NOT IMPLEMENTED YET
     Zero, Carry, Negative: OUT std_logic;		--FLAGS
     Result: OUT std_logic_vector(31 DOWNTO 0);		--Output
     FlagsRegisterEnable: OUT std_logic
@@ -34,14 +34,22 @@ begin
     ELSE std_logic_vector(shift_left(unsigned(Rsrc1Signal), to_integer(unsigned(Instr)))) WHEN ALU_SEL = "1001" 	--Shift left Source1 by Instr bits
     ELSE std_logic_vector(shift_right(unsigned(Rsrc1Signal), to_integer(unsigned(Instr)))) WHEN ALU_SEL = "1010" 	--Shift Right Source1 by Instr bits
     ELSE Rsrc2Signal WHEN ALU_SEL = "1011"; --pass Source2
-    Zero <= '1' WHEN tempOut(31 DOWNTO 0) = "00000000000000000000000000000000" AND ALU_SEL /= "0000" 	--if the ALU is not disabled and the result of the operation is zero, set the zero flag.
+   
+    Zero <= '1' WHEN tempOut(31 DOWNTO 0) = "00000000000000000000000000000000" AND NOT (ALU_SEL = "0000" OR ALU_SEL = "0011")	--if the ALU is not disabled and the result of the operation is zero, set the zero flag.
+    ELSE ZF WHEN (ALU_SEL = "0000" OR ALU_SEL = "0011")
     ELSE '0';
-    Negative <= '1' WHEN tempOut(31) = '1' AND ALU_SEL /= "0000" 	--set Negative flag if the most significant bit of the result is 1
+
+    Negative <= '1' WHEN tempOut(31) = '1' AND NOT (ALU_SEL = "0000" OR ALU_SEL = "0011")
+    ELSE NF WHEN (ALU_SEL = "0000" OR ALU_SEL = "0011")	--set Negative flag if the most significant bit of the result is 1
     ELSE '0'; 
-    FlagsRegisterEnable <= '0' when ALU_SEL = "0000"
+
+    FlagsRegisterEnable <= '0' when ALU_SEL = "0000" OR ALU_SEL = "0011"
     ELSE '1';
-    Carry <= '1' WHEN  tempOut(32) = '1'
-    ELSE '0';	
+    
+    Carry <= '1' WHEN  tempOut(32) = '1' AND (ALU_SEL /= "1000" AND ALU_SEL /= "0011" AND ALU_SEL /= "0000")
+    ELSE CF WHEN  ALU_SEL = "1000" OR ALU_SEL = "0011" OR ALU_SEL = "0000"
+    ELSE '0';
+
     Result <= tempOut(31 DOWNTO 0); --set the result to tempOut
     
 END Execute_ALU_ARCH;

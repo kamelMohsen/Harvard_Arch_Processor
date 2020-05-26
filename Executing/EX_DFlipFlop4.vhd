@@ -15,9 +15,10 @@ PROCESS(clk,rst)
 BEGIN
 IF(rst = '1') THEN
 q <= (Others => '0');
-ELSIF clk'event and clk = '0' AND en = '1' THEN
-q <= d;
-
+ELSIF clk'event and clk = '0' then
+   IF en = '1' THEN
+        q <= d;
+    END IF;
 END IF;
 END PROCESS;
 END DFF_4_ARCH;

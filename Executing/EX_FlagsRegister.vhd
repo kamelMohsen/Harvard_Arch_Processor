@@ -5,7 +5,7 @@ ENTITY Execute_FlagsRegister IS PORT
 (
     ZeroInput, NegativeInput, CarryInput: IN std_logic;
     SETC: IN std_logic_vector(1 DOWNTO  0);
-    clk: IN std_logic;
+    clk,ENABLE: IN std_logic;
     rst: IN std_logic;
     ZeroReset, CarryReset, NegativeReset: IN std_logic;
     MemoryInput: IN std_logic_vector(3 DOWNTO 0);
@@ -27,7 +27,8 @@ clk,rst,en : IN std_logic;
 q : OUT std_logic_vector(3 DOWNTO 0)
 );
 END COMPONENT;
-
+SIGNAL REG_OUT: STD_LOGIC_VECTOR(3 DOWNTO 0);
+SIGNAL REAL_ENABLE : STD_LOGIC;
 BEGIN
 
 
@@ -44,10 +45,12 @@ ELSE NegativeInput;
 FlagsSignal(0) <= ZeroSignal;
 FlagsSignal(1) <= NegativeSignal;
 FlagsSignal(2) <= CarrySignal;
-FlagsSignal(3) <= '0';
 
-Flag_Reg: Execute_DFF_4 PORT MAP(FlagsSignal, clk, rst, '1', RegOut);
+REAL_ENABLE <= '1' WHEN (ENABLE = '1' OR SETC = "01" OR SETC = "10")
+ELSE '0'; 
 
+Flag_Reg: Execute_DFF_4 PORT MAP(FlagsSignal, clk, rst, REAL_ENABLE, REG_OUT);
+RegOut <= REG_OUT;
 
 
 

@@ -23,7 +23,7 @@ architecture FU_INSTRUCTION_MEMORY_ARCH of FU_INSTRUCTION_MEMORY is
 
 	END COMPONENT;
 
-   type ram_type is array (0 to (2**20)-1) of std_logic_vector(15 DOWNTO 0);
+   type ram_type is array (0 to (2**11)-1) of std_logic_vector(15 DOWNTO 0);
    signal ram : ram_type;
    signal read_address : std_logic_vector(Data_Width-1 DOWNTO 0);
    signal incremented_address : std_logic_vector(Data_Width-1 DOWNTO 0);

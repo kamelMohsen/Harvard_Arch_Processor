@@ -13,7 +13,7 @@ BEGIN
 	BEGIN
 		IF(RST = '1') THEN
 			Q <= (OTHERS=>'0');
-		ELSIF rising_edge(CLK) THEN
+		ELSIF falling_edge(CLK) THEN
 			IF EnData1='1' THEN
 				Q <= WriteData1;
 			ELSIF  EnData2='1' THEN

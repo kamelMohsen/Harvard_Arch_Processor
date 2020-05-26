@@ -6,12 +6,22 @@ PORT( WriteData1,WriteData2: IN std_logic_vector(31 DOWNTO 0);
       Rsrc1,Rsrc2,WriteAddress1 ,WriteAddress2: IN std_logic_vector(2 DOWNTO 0);
       WriteEn: IN std_logic_vector(1 DOWNTO 0); 
       CLOCK,RESET: IN std_logic;
-      Read1,Read2: OUT std_logic_vector(31 DOWNTO 0));
+	  Read1,Read2: OUT std_logic_vector(31 DOWNTO 0);
+	  REG_0_OUT,REG_1_OUT, REG_2_OUT, REG_3_OUT, REG_4_OUT, REG_5_OUT, REG_6_OUT, REG_7_OUT: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+	  );
 
 END DECODER_RegisterFile;
 --===================================================================================================================--
 
 ARCHITECTURE DECODER_RegisterFile_ARCH OF DECODER_RegisterFile IS
+
+COMPONENT DECODER_WriteDecoder IS 
+	PORT( INP : IN std_logic_vector(2 DOWNTO 0);
+	      Enable,CLK: IN std_logic;
+	      OUTP : OUT std_logic_vector(7 DOWNTO 0));
+END COMPONENT;
+
+
 
 COMPONENT DECODER_Register IS 
 	PORT( WriteData1,WriteData2 : IN std_logic_vector(31 DOWNTO 0);
@@ -23,8 +33,8 @@ END COMPONENT;
 
 COMPONENT DECODER_Decoder IS 
 	PORT( INP : IN std_logic_vector(2 DOWNTO 0);
-	      Enable: IN std_logic;
-	      OUTP : OUT std_logic_vector(7 DOWNTO 0));
+	Enable,clk: IN std_logic;
+	OUTP : OUT std_logic_vector(7 DOWNTO 0));
 END COMPONENT;
 
 COMPONENT DECODER_Tristate IS 
@@ -35,6 +45,7 @@ END COMPONENT;
 
 COMPONENT DECODER_WriteEnable IS 
 	PORT( INP : IN std_logic_vector(1 DOWNTO 0);
+		  CLK : IN STD_LOGIC;
 	      OutpDec2,OutpDec1 : OUT std_logic);
 END COMPONENT;
 
@@ -44,11 +55,11 @@ SIGNAL DecoderEnable1,DecoderEnable2 :std_logic;
 
 BEGIN
 
-Enable: DECODER_WriteEnable PORT MAP (WriteEn,DecoderEnable2,DecoderEnable1);
-ReadDecoder1: DECODER_Decoder PORT MAP (Rsrc1,'1',R_Decoder_TriEnable1);
-ReadDecoder2: DECODER_Decoder PORT MAP (Rsrc2,'1',R_Decoder_TriEnable2);
-WriteDecoder1: DECODER_Decoder PORT MAP (WriteAddress1,DecoderEnable1,W_Decoder_Reg1);
-WriteDecoder2: DECODER_Decoder PORT MAP (WriteAddress2,DecoderEnable2,W_Decoder_Reg2);
+Enable: DECODER_WriteEnable PORT MAP (WriteEn,CLOCK,DecoderEnable2,DecoderEnable1);
+ReadDecoder1: DECODER_Decoder PORT MAP (Rsrc1,'1',CLOCK,R_Decoder_TriEnable1);
+ReadDecoder2: DECODER_Decoder PORT MAP (Rsrc2,'1',CLOCK,R_Decoder_TriEnable2);
+WriteDecoder1: DECODER_WriteDecoder PORT MAP (WriteAddress1,DecoderEnable1,CLOCK,W_Decoder_Reg1);
+WriteDecoder2: DECODER_WriteDecoder PORT MAP (WriteAddress2,DecoderEnable2,CLOCK,W_Decoder_Reg2);
 
 R0: DECODER_Register PORT MAP(WriteData1,WriteData2,CLOCK,RESET,W_Decoder_Reg1(0),W_Decoder_Reg2(0),Q0);
 R1: DECODER_Register PORT MAP(WriteData1,WriteData2,CLOCK,RESET,W_Decoder_Reg1(1),W_Decoder_Reg2(1),Q1);
@@ -77,6 +88,16 @@ TRIRead2_5: DECODER_Tristate PORT MAP(Q5,R_Decoder_TriEnable2(5),Read2);
 TRIRead2_6: DECODER_Tristate PORT MAP(Q6,R_Decoder_TriEnable2(6),Read2);
 TRIRead2_7: DECODER_Tristate PORT MAP(Q7,R_Decoder_TriEnable2(7),Read2);
 
+
+
+REG_0_OUT <= Q0; 
+REG_1_OUT <= Q1;
+REG_2_OUT <= Q2;
+REG_3_OUT <= Q3;
+REG_4_OUT <= Q4;
+REG_5_OUT <= Q5;
+REG_6_OUT <= Q6;
+REG_7_OUT <= Q7;
 
 
 END DECODER_RegisterFile_ARCH;

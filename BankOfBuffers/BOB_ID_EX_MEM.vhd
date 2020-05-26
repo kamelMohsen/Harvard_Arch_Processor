@@ -4,8 +4,8 @@ USE IEEE.std_logic_1164.all;
 ENTITY BOB_ID_EX_MEM IS
 
 	PORT(Clk,Rst,enable : IN std_logic;
-	d : IN std_logic_vector(6 DOWNTO 0);
-	q : OUT std_logic_vector(6 DOWNTO 0));
+	d : IN std_logic_vector(8 DOWNTO 0);
+	q : OUT std_logic_vector(8 DOWNTO 0));
 
 END BOB_ID_EX_MEM;
 
@@ -19,7 +19,7 @@ ARCHITECTURE BOB_ID_EX_MEM_ARCH OF BOB_ID_EX_MEM IS
 
 	END COMPONENT;
 	BEGIN
-	loop1: FOR i IN 0 TO 6 GENERATE
+	loop1: FOR i IN 0 TO 8 GENERATE
 		fx : BOB_BITFF PORT MAP(d(i),Clk,Rst,enable,q(i));
 	END GENERATE;
 END BOB_ID_EX_MEM_ARCH;
