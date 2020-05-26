@@ -7,7 +7,6 @@
 
 .ORG 2  #this is the interrupt address
 100
-200
 
 .ORG 10
 setC           #C --> 1

@@ -77,7 +77,7 @@ COMPONENT Execute_ALU  IS PORT (
     Rsrc1, Rsrc2: IN std_logic_vector( 31 DOWNTO 0);    --Source1 and Source2
     Instr: IN std_logic_vector( 4 DOWNTO 0);    	--Shift Amount
     ALU_Sel: IN std_logic_vector(3 DOWNTO 0);   	-- Operation Selector
-    Stall: IN std_logic; 				-- Stall --NOT IMPLEMENTED YET
+    ZF,NF,CF,Stall: IN std_logic; 				-- Stall --NOT IMPLEMENTED YET
     Zero, Carry, Negative: OUT std_logic;		--FLAGS
     Result: OUT std_logic_vector(31 DOWNTO 0);		--Output
     FlagsRegisterEnable: OUT std_logic
@@ -100,7 +100,7 @@ END COMPONENT;
 COMPONENT Execute_OutPort IS PORT  (
 	en: IN std_logic;
 	input1: IN std_logic_vector(31 DOWNTO 0);
-	clk: IN std_logic;
+	clk,rst: IN std_logic;
 	output1: OUT std_logic_vector(31 DOWNTO 0)
     );
 END COMPONENT;
@@ -173,9 +173,9 @@ MEM_OUT <= MEM_IN;
 
 Ext: Execute_ZeroExtender PORT MAP(ZERO_TO_THIRTY_ONE_IN(31 DOWNTO 16), ZeroExtendedSignal, Extender);
 
-FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk,FLAG_WRITE, FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
+FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk,'1', FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
 
-Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk, OutPort_Output);
+Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk,FlagsRegisterReset, OutPort_Output);
 
 JUMP_LOCTION <= M1Output;
 READ1_OUT <= READ1;
@@ -185,7 +185,7 @@ Mux3: Execute_MUX2x1 PORT MAP(PC, M1Output, M3_Sel, M3Output);
 Mux4: Execute_MUX2x1 PORT MAP(M2Output, ZeroExtendedSignal, M4_Sel, M4Output);
 Mux5: Execute_MUX2x1 PORT MAP(M3Output, IN_PORT, IN_EN, M5Output);
 
-ALU1: Execute_ALU PORT MAP(M5Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4), ALUSel, '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut,FLAG_WRITE);
+ALU1: Execute_ALU PORT MAP(M5Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4), ALUSel,FROut(0),FROut(1),FROut(2), '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut,FLAG_WRITE);
 ZERO_TO_EIGHT_OUT <=ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 0);
 Swap_Output <= M2Output;
 FlagsRegisterOut <= FROut;
