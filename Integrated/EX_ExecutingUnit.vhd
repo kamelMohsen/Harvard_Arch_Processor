@@ -188,7 +188,7 @@ Mux5: Execute_MUX2x1 PORT MAP(M3Output, IN_PORT, IN_EN, M5Output);
 ALU1: Execute_ALU PORT MAP(M5Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4), ALUSel,FROut(0),FROut(1),FROut(2), '1', ALU_Zero, ALU_Carry, ALU_Neg, AluOut,FLAG_WRITE);
 ZERO_TO_EIGHT_OUT <=ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 0);
 Swap_Output <= M2Output;
-FlagsRegisterOut <= FROut;
+FlagsRegisterOut <= '0' & FROut(2 DOWNTO 0);
 and1: Execute_TwoInputAnd PORT MAP(FROut(0), AND_INPUT1, And1_Out);
 and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);
 and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);

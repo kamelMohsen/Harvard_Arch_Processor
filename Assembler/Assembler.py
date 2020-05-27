@@ -64,7 +64,10 @@ try:
         if operation == ".org":
             org_counter += 1
             org_location = sub_commands.pop(0)
-            while org_location != str(memory_location1):
+            decimal_org = int(org_location, 16)
+            print(str(decimal_org))
+            print (str(memory_location1))
+            while decimal_org != memory_location1:
                 output1_file.write(str(memory_location1) + ": ")
                 output1_file.write("0000000000000000\n")
                 memory_location1 += 1
@@ -78,7 +81,7 @@ try:
                 print("Cached Error in immediate instruction writing")
 
     # Prints zeroes in the rest of the memory locations
-    while memory_location1 < 2047:
+    while memory_location1 < 2048:
         output1_file.write(str(memory_location1) + ": ")
         output1_file.write("0000000000000000\n")
         memory_location1 += 1
@@ -310,7 +313,7 @@ try:
                 print("ORG of data mem")
 
     # Prints zeroes in the rest of the memory locations
-    while memory_location2 < 2047:
+    while memory_location2 < 2048:
         output2_file.write(str(memory_location2) + ": ")
         output2_file.write("0000000000000000\n")
         memory_location2 += 1
