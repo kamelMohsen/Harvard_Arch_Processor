@@ -281,12 +281,14 @@ sim:/harvard_processor/INT_SIGNAL \
 sim:/harvard_processor/RESET \
 sim:/harvard_processor/CLK \
 sim:/harvard_processor/IN_PORT \
+sim:/harvard_processor/CARRY_FLAG \
 sim:/harvard_processor/IF_ID_PC_IN_WIRE \
 sim:/harvard_processor/WB_FETCH_MEMORY_OUT_WIRE \
 sim:/harvard_processor/RETI_OUT_WIRE \
 sim:/harvard_processor/MEM_WB_WB_OUT_WIRE \
 sim:/harvard_processor/WB_WRITE_BACK_DATA1_OUT_WIRE \
 sim:/harvard_processor/MEM_WB_WB_OUT_WIRE \
+sim:/harvard_processor/EX_MEM_MEM_OUT_WIRE \
 sim:/harvard_processor/MEM_WB_MEMORY_RESULT_IN_WIRE
 force -freeze sim:/harvard_processor/RESET 1 0
 force -freeze sim:/harvard_processor/INT_SIGNAL 0 0
@@ -297,11 +299,11 @@ run
 force -freeze sim:/harvard_processor/RESET 1 0
 run 
 force -freeze sim:/harvard_processor/RESET 0 0
+run 
+run 
 force -freeze sim:/harvard_processor/INT_SIGNAL 1 0
-run 
-force -freeze sim:/harvard_processor/INT_SIGNAL 0 0
-run 
 run
+force -freeze sim:/harvard_processor/INT_SIGNAL 0 0
 run
 
 
@@ -359,31 +361,29 @@ run
 run
 run
 run
-run 
-run 
-run
-run
-run 
-run 
-run
-run
-run 
-run 
-run
-run
-run 
-run 
-run
-run
-run
 force -freeze sim:/harvard_processor/IN_PORT 32'h00000200 0
+run 
+run 
+run
+run
+run 
+run 
+run
+run
+run 
+run 
+run
+run
+run 
+run 
 run
 run
 run
 run
-force -freeze sim:/harvard_processor/INT_SIGNAL 1 0
 run
-force -freeze sim:/harvard_processor/INT_SIGNAL 0 0
+run
+run
+run
 run
 run
 run

@@ -67,7 +67,8 @@ IN_PORT: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 MEM_SWAP_BIT,WB_SWAP_BIT : IN STD_LOGIC;
 MEM_SWAP_VALUE,WB_SWAP_VALUE :IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS:IN std_logic_vector(2 DOWNTO 0);
-READ1_OUT:OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+READ1_OUT:OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+RTI_IN_MEM: IN std_logic
 );
 END ENTITY ExecutingUnit;
 
@@ -91,6 +92,7 @@ COMPONENT Execute_FlagsRegister IS PORT (
     rst: IN std_logic;
     ZeroReset, CarryReset, NegativeReset: IN std_logic;
     MemoryInput: IN std_logic_vector(3 DOWNTO 0);
+    RTI_IN: IN std_logic;
     --ZeroOutput, CarryOutput, NegativeOutput: OUT std_logic;
     RegOut: OUT std_logic_vector(3 DOWNTO 0)
     --reti input
@@ -173,7 +175,7 @@ MEM_OUT <= MEM_IN;
 
 Ext: Execute_ZeroExtender PORT MAP(ZERO_TO_THIRTY_ONE_IN(31 DOWNTO 16), ZeroExtendedSignal, Extender);
 
-FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk,'1', FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput, FROut);
+FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk,'1', FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput,RTI_IN_MEM, FROut);
 
 Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk,FlagsRegisterReset, OutPort_Output);
 
@@ -189,9 +191,9 @@ ALU1: Execute_ALU PORT MAP(M5Output, M4Output, ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 4)
 ZERO_TO_EIGHT_OUT <=ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 0);
 Swap_Output <= M2Output;
 FlagsRegisterOut <= '0' & FROut(2 DOWNTO 0);
-and1: Execute_TwoInputAnd PORT MAP(FROut(0), AND_INPUT1, And1_Out);
-and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);
-and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);
+and1: Execute_TwoInputAnd PORT MAP(FROut(0), AND_INPUT1, And1_Out);--JZ
+and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);--JN
+and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);--JC
 or1: Execute_FourInputOr PORT MAP(clk,And1_Out, And2_Out, And3_Out, Solo_Or_Input, Or_Output);
 
 FORWARDING_UNIT: Execute_FWU PORT MAP (clk,MEM_REG_WRITE, WB_REG_WRITE,

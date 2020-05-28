@@ -71,7 +71,7 @@ END COMPONENT;
 
 SIGNAL Data,Address : std_logic_vector(N-1 DOWNTO 0);
 SIGNAL StackAddress :std_logic_vector(10 DOWNTO 0);
-SIGNAL RETI_OR_INT,INTR_AND : STD_LOGIC;
+SIGNAL RETI_OR_INT,INTR_AND,RTI_WIRE : STD_LOGIC;
 BEGIN
 
 PROCESS(Clk)
@@ -97,12 +97,15 @@ Inst0to8_OUT <= Inst0to8_IN;
 WB_ResultOrMem_Out <= WB_ResultOrMem_IN;
 WB_WriteEnable_Out <= WB_WriteEnable_IN;
 WB_INPort_Out <= WB_INPort_IN;
-WB_RegPCOrMemPC_Out <= WB_RegPCOrMemPC_IN;
+WB_RegPCOrMemPC_Out <= WB_RegPCOrMemPC_IN WHEN RTI_WIRE = '0'
+ELSE '0';
 --------------------------------------------
+
+RETI_OUT <= RTI_WIRE;
 
 Memory : DataMemory Generic MAP(N) PORT MAP (Clk,WriteEnable,StackOrData,Address,Data,DataRead, RESET,INTR_AND);
 SP: StackPointer PORT MAP (SPSEL,StackAddress,Clk,RESET);
-RTI_UNIT : MEM_RTI_UNIT PORT MAP(RETI,Clk, RETI_OUT);
+RTI_UNIT : MEM_RTI_UNIT PORT MAP(RETI,Clk,RTI_WIRE );
 
 RETI_OR_INT <= '0' WHEN RETI = '0' AND ResultOrFlags = '0'
 ELSE '1';

@@ -127,7 +127,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       MEM_SWAP_BIT,WB_SWAP_BIT : STD_LOGIC;
       MEM_SWAP_VALUE,WB_SWAP_VALUE : STD_LOGIC_VECTOR(31 DOWNTO 0);
       MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS:IN std_logic_vector(2 DOWNTO 0);
-      READ1_OUT:OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+      READ1_OUT:OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+      RTI_IN_MEM: IN std_logic
       );
     END COMPONENT;
 
@@ -323,7 +324,7 @@ END COMPONENT;
     ELSE "000000000" WHEN HAZARD_OUT = '1';--MEM = (0-2 -> SPSEL) & (3 -> DATA_STACK) & (4 -> WRITE_ENABLE_MEMORY) & (5 -> CALL) & (6 -> RETI) & (7 -> INT) & (8 -> READ ENABLE)
     
     CAT_ID_EX_EX <= (CS_EX_JC & CS_EX_JN & CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_JZ & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL) WHEN HAZARD_OUT = '0'
-    ELSE "0000000000000" WHEN HAZARD_OUT = '1';--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> BRANCH) & (9 -> REG_IMM) & (10 -> PC_REG)
+    ELSE "0000000000000" WHEN HAZARD_OUT = '1';--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> JC) & (9 -> REG_IMM) & (10 -> PC_REG)
 
 
     ZERO_EXTENDER_FLAGS <= X"0000000" & EX_MEM_FLAGS_OUT_WIRE;
@@ -505,7 +506,8 @@ END COMPONENT;
                                               MEM_WB_DESTINATION_OUT_WIRE,
                                               EX_MEM_INST_0_8_OUT_WIRE(8 DOWNTO 6),
                                               MEM_WB_INST_0_8_OUT_WIRE(8 DOWNTO 6),
-                                              EX_MEM_READ1_IN_WIRE
+                                              EX_MEM_READ1_IN_WIRE,
+                                              RETI_OUT_WIRE
                                               );
 
     --THE EX/MEM INTERMEDIATE BUFFER
@@ -559,7 +561,8 @@ END COMPONENT;
                                         DATA_MEM_ADDRESS_TEST,
                                         DATA_MEM_IN_TEST,
                                         EX_MEM_MEM_OUT_WIRE(5),
-                                        CALL_CLEAR,RETI_OUT_WIRE,
+                                        CALL_CLEAR,
+                                        RETI_OUT_WIRE,
                                         StackAddress_WIRE
                                         );
 

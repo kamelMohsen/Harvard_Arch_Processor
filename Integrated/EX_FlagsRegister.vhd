@@ -9,7 +9,7 @@ ENTITY Execute_FlagsRegister IS PORT
     rst: IN std_logic;
     ZeroReset, CarryReset, NegativeReset: IN std_logic;
     MemoryInput: IN std_logic_vector(3 DOWNTO 0);
-    --ZeroOutput, CarryOutput, NegativeOutput: OUT std_logic;
+    RTI_IN: IN std_logic;
     RegOut: OUT std_logic_vector(3 DOWNTO 0)
     --reti input
 );
@@ -32,7 +32,7 @@ SIGNAL REAL_ENABLE : STD_LOGIC;
 BEGIN
 
 
-CarrySignal <= CarryInput WHEN SETC = "00" OR SETC = "11"
+CarrySignal <= CarryInput WHEN ((SETC = "00" OR SETC = "11") AND CarryReset /='1')
 ELSE  '1' WHEN SETC = "01"
 ELSE  '0' WHEN SETC = "10" OR CarryReset = '1';
  
@@ -42,9 +42,14 @@ ELSE ZeroInput;
 NegativeSignal <= '0' WHEN NegativeReset = '1' 
 ELSE NegativeInput;
 
-FlagsSignal(0) <= ZeroSignal;
-FlagsSignal(1) <= NegativeSignal;
-FlagsSignal(2) <= CarrySignal;
+FlagsSignal(0) <= ZeroSignal WHEN RTI_IN = '0'
+ELSE MemoryInput(0);
+
+FlagsSignal(1) <= NegativeSignal WHEN RTI_IN = '0'
+ELSE MemoryInput(1);
+
+FlagsSignal(2) <= CarrySignal WHEN RTI_IN = '0'
+ELSE MemoryInput(2);
 
 REAL_ENABLE <= '1' WHEN (ENABLE = '1' OR SETC = "01" OR SETC = "10")
 ELSE '0'; 
