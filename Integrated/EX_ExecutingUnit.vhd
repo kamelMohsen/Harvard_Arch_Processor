@@ -2,7 +2,7 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
 ENTITY ExecutingUnit IS PORT(
-CARRY_FLAG_OUT, ZERO_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
+ZERO_FLAG_OUT,CARRY_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
 --CONTROL SIGNALS-----
 WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
 MEM_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
@@ -78,7 +78,7 @@ COMPONENT Execute_ALU  IS PORT (
     Rsrc1, Rsrc2: IN std_logic_vector( 31 DOWNTO 0);    --Source1 and Source2
     Instr: IN std_logic_vector( 4 DOWNTO 0);    	--Shift Amount
     ALU_Sel: IN std_logic_vector(3 DOWNTO 0);   	-- Operation Selector
-    ZF,NF,CF,Stall: IN std_logic; 				-- Stall --NOT IMPLEMENTED YET
+    ZF,CF,NF,Stall: IN std_logic; 				-- Stall --NOT IMPLEMENTED YET
     Zero, Carry, Negative: OUT std_logic;		--FLAGS
     Result: OUT std_logic_vector(31 DOWNTO 0);		--Output
     FlagsRegisterEnable: OUT std_logic
@@ -86,7 +86,7 @@ COMPONENT Execute_ALU  IS PORT (
 END COMPONENT;
 
 COMPONENT Execute_FlagsRegister IS PORT (
-    ZeroInput, NegativeInput, CarryInput: IN std_logic;
+    ZeroInput, CarryInput,NegativeInput : IN std_logic;
     SETC: IN std_logic_vector(1 DOWNTO  0);
     clk,ENABLE: IN std_logic;
     rst: IN std_logic;
@@ -166,16 +166,17 @@ SIGNAL FLAG_WRITE, OR_OUT_WIRE: STD_LOGIC;
 
 BEGIN
 
-CARRY_FLAG_OUT <=  FROut(2);
+
 ZERO_FLAG_OUT <=   FROut(0); 
-NEGATIVE_FLAG_OUT <= FROut(1);
+CARRY_FLAG_OUT <=  FROut(1);
+NEGATIVE_FLAG_OUT <= FROut(2);
 
 WB_OUT <= WB_IN;
 MEM_OUT <= MEM_IN;
 
 Ext: Execute_ZeroExtender PORT MAP(ZERO_TO_THIRTY_ONE_IN(31 DOWNTO 16), ZeroExtendedSignal, Extender);
 
-FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Neg, ALU_Carry, SETC, clk,'1', FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput,RTI_IN_MEM, FROut);
+FR1: Execute_FlagsRegister PORT MAP(ALU_Zero, ALU_Carry,ALU_Neg, SETC, clk,'1', FlagsRegisterReset, And1_Out, And3_Out, And2_Out, MemoryInput,RTI_IN_MEM, FROut);
 
 Outport1: Execute_OutPort PORT MAP(OutPortSel, M1Output,clk,FlagsRegisterReset, OutPort_Output);
 
@@ -192,8 +193,8 @@ ZERO_TO_EIGHT_OUT <=ZERO_TO_THIRTY_ONE_IN(8 DOWNTO 0);
 Swap_Output <= M2Output;
 FlagsRegisterOut <= '0' & FROut(2 DOWNTO 0);
 and1: Execute_TwoInputAnd PORT MAP(FROut(0), AND_INPUT1, And1_Out);--JZ
-and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);--JN
-and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);--JC
+and2: Execute_TwoInputAnd PORT MAP(FROut(1), AND_INPUT2, And2_Out);--JC
+and3: Execute_TwoInputAnd PORT MAP(FROut(2), AND_INPUT3, And3_Out);--JN
 or1: Execute_FourInputOr PORT MAP(clk,And1_Out, And2_Out, And3_Out, Solo_Or_Input, Or_Output);
 
 FORWARDING_UNIT: Execute_FWU PORT MAP (clk,MEM_REG_WRITE, WB_REG_WRITE,

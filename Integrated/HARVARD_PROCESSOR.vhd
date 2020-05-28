@@ -42,7 +42,9 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     PORT (
     RESET,STALL,CLK: IN STD_LOGIC;
     PC_IN, INST_IN: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-    INST_OUT, PC_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0));
+    INST_OUT, PC_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0);
+    FLUSH: IN STD_LOGIC
+    );
     
     END COMPONENT;
 
@@ -80,14 +82,16 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
       MEM_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
       EX_OUT: OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
-      INST_OUT, PC_OUT, READ1_OUT, READ2_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0));
+      INST_OUT, PC_OUT, READ1_OUT, READ2_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0);
+      FLUSH: IN STD_LOGIC
+      );
     
     END COMPONENT;
 
     --IMPORTING THE EXECUTION UNIT
     COMPONENT ExecutingUnit IS 
       PORT(
-      CARRY_FLAG_OUT, ZERO_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
+      ZERO_FLAG_OUT,CARRY_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
       WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
       MEM_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
       WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
@@ -147,7 +151,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       MEM_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
       FLAGS_OUT: OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
       INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
-      EFFECTIVE_ADDRESS_OUT: OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+      EFFECTIVE_ADDRESS_OUT: OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+      FLUSH: IN STD_LOGIC
       );
     END COMPONENT;
     --IMPORTING MEMORY UNIT
@@ -193,7 +198,9 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
         INST_0_8_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
         MEMORY_RESULT_OUT, RESULT_OUT, DESTINATION_OUT: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
-        INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0));
+        INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
+        FLUSH: IN STD_LOGIC
+        );
   END COMPONENT;
 
 
@@ -323,8 +330,8 @@ END COMPONENT;
     CAT_ID_EX_MEM <= (CS_MEM_READ_ENABLE & CS_MEM_INT & CS_MEM_RETI & CS_MEM_Call & CS_MEM_WriteEnableMemory & CS_MEM_Data_Stack & CS_MEM_SPSel) WHEN HAZARD_OUT = '0'
     ELSE "000000000" WHEN HAZARD_OUT = '1';--MEM = (0-2 -> SPSEL) & (3 -> DATA_STACK) & (4 -> WRITE_ENABLE_MEMORY) & (5 -> CALL) & (6 -> RETI) & (7 -> INT) & (8 -> READ ENABLE)
     
-    CAT_ID_EX_EX <= (CS_EX_JC & CS_EX_JN & CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_JZ & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL) WHEN HAZARD_OUT = '0'
-    ELSE "0000000000000" WHEN HAZARD_OUT = '1';--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> JC) & (9 -> REG_IMM) & (10 -> PC_REG)
+    CAT_ID_EX_EX <= (CS_EX_JN & CS_EX_JC & CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_JZ & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL) WHEN HAZARD_OUT = '0'
+    ELSE "0000000000000" WHEN HAZARD_OUT = '1';--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> JZ) & (9 -> REG_IMM) & (10 -> PC_REG) & (11 -> JC) & (12 -> JN)
 
 
     ZERO_EXTENDER_FLAGS <= X"0000000" & EX_MEM_FLAGS_OUT_WIRE;
@@ -375,7 +382,8 @@ END COMPONENT;
                                         IF_ID_PC_IN_WIRE,  --CURRENT PC FROM FETCHING UNIT
                                         IF_ID_INST_IN_WIRE, --FETCHED INSTRUCTION FROM FETCHING UNIT
                                         IF_ID_INST_OUT_WIRE, --FETCHED INSTRUCTION OUTED WIRE
-                                        IF_ID_PC_OUT_WIRE--CURRENT PC OUTED WIRE                                   
+                                        IF_ID_PC_OUT_WIRE,--CURRENT PC OUTED WIRE                                   
+                                        WB_FETCH_MEMORY_OUT_WIRE
                                         );
 
 -------------------------------------------------------------DECODEING---------------------------------------------
@@ -449,14 +457,15 @@ END COMPONENT;
                                         ID_EX_INST_OUT_WIRE, 
                                         ID_EX_PC_OUT_WIRE, 
                                         ID_EX_Read1_OUT_WIRE, 
-                                        ID_EX_Read2_OUT_WIRE
+                                        ID_EX_Read2_OUT_WIRE,
+                                        WB_FETCH_MEMORY_OUT_WIRE
                                         );
                                         
 -------------------------------------------------------------EXECUTING---------------------------------------------
 
     --THE EXECUTING UNIT
-    EXECUTION_UNIT: ExecutingUnit PORT MAP ( CARRY_FLAG, 
-                                              ZERO_FLAG, 
+    EXECUTION_UNIT: ExecutingUnit PORT MAP (  ZERO_FLAG, 
+                                              CARRY_FLAG,
                                               NEGATIVE_FLAG,
                                               ID_EX_WB_OUT_WIRE,
                                               ID_EX_MEM_OUT_WIRE,
@@ -529,7 +538,8 @@ END COMPONENT;
                                           EX_MEM_MEM_OUT_WIRE,
                                           EX_MEM_FLAGS_OUT_WIRE,
                                           EX_MEM_INST_0_8_OUT_WIRE,
-                                          EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE
+                                          EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE,
+                                          WB_FETCH_MEMORY_OUT_WIRE
                                           );
 
 -------------------------------------------------------------MEMORY---------------------------------------------
@@ -579,7 +589,8 @@ END COMPONENT;
                                           MEM_WB_RESULT_OUT_WIRE, 
                                           MEM_WB_DESTINATION_OUT_WIRE,
                                           MEM_WB_WB_OUT_WIRE,
-                                          MEM_WB_INST_0_8_OUT_WIRE
+                                          MEM_WB_INST_0_8_OUT_WIRE,
+                                          '0'
 				                                   );
 -------------------------------------------------------------WRITE_BACK---------------------------------------------
 
