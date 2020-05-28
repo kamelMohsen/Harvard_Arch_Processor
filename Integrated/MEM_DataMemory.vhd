@@ -10,7 +10,7 @@ PORT (Clk : IN std_logic;
       Address : IN std_logic_vector(N-1 DOWNTO 0);
       DataIn : IN std_logic_vector(N-1 DOWNTO 0);
 	  DataOut : OUT std_logic_vector(N-1 DOWNTO 0);
-	  RESET: IN STD_LOGIC
+	  RESET,INTR: IN STD_LOGIC
 	   );
 END ENTITY DataMemory;
 
@@ -43,9 +43,10 @@ BEGIN
 		END IF;
 	END PROCESS;
 	
-	DataOut <= ram(IntegerAddressPlusOne) & ram(IntegerAddress) WHEN StackOrData = '0' AND RESET = '0' 
-	ELSE ram(IntegerAddressMinusOne) & ram(IntegerAddress) WHEN StackOrData = '1' AND RESET = '0'
-	ELSE ram(1) & ram(0) WHEN RESET = '1' ;
+	DataOut <= ram(IntegerAddressPlusOne) & ram(IntegerAddress) WHEN StackOrData = '0' AND RESET = '0' AND (INTR = '0')
+	ELSE ram(IntegerAddressMinusOne) & ram(IntegerAddress) WHEN StackOrData = '1' AND RESET = '0' AND (INTR = '0' )
+	ELSE ram(1) & ram(0) WHEN RESET = '1' AND (INTR = '0'  )
+	ELSE ram(3) & ram(2) WHEN INTR = '1';
 	
 	
 

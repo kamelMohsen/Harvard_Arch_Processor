@@ -36,7 +36,8 @@ Begin
 		ELSE std_logic_vector((to_unsigned((to_integer(unsigned(SP_REG_OUT)) + 0),11))) WHEN SPSel = "010"
 		ELSE SP_REG_OUT	 WHEN SPSel = "011"
 		ELSE std_logic_vector((to_unsigned((to_integer(unsigned(SP_REG_OUT))+ 0 ),11))) WHEN SPSel = "100"
-		;
+		ELSE SP_REG_OUT	;
+		
 
 
 
@@ -44,7 +45,7 @@ Begin
 		ELSE std_logic_vector((to_unsigned((to_integer(unsigned(SP_REG_OUT))+2),11))) WHEN SPSel = "010"
 		ELSE std_logic_vector((to_unsigned((to_integer(unsigned(SP_REG_OUT))-2),11))) WHEN SPSel = "011"
 		ELSE std_logic_vector((to_unsigned((to_integer(unsigned(SP_REG_OUT))+2),11))) WHEN SPSel = "100"
-		;
+		ELSE SP_REG_OUT	  ;
 	
 
 End SP;

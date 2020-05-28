@@ -29,6 +29,7 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     PORT (INT_SIGNAL, JUMP_BIT, RETI_BIT, MEMORY_BIT,CLK: IN STD_LOGIC;
     JUMP_LOCATION, MEMORY_INSTR: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
   	INSTRUCTION, PC : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0);
+    CHANGE_TO_INTR : OUT STD_LOGIC;
     RESET : IN STD_LOGIC;
     RESET_ADDRESS: IN  STD_LOGIC_VECTOR(31 DOWNTO 0) 
     );
@@ -41,7 +42,9 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
     PORT (
     RESET,STALL,CLK: IN STD_LOGIC;
     PC_IN, INST_IN: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-    INST_OUT, PC_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0));
+    INST_OUT, PC_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0);
+    FLUSH: IN STD_LOGIC
+    );
     
     END COMPONENT;
 
@@ -79,14 +82,16 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
       MEM_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
       EX_OUT: OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
-      INST_OUT, PC_OUT, READ1_OUT, READ2_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0));
+      INST_OUT, PC_OUT, READ1_OUT, READ2_OUT : OUT  STD_LOGIC_VECTOR(31 DOWNTO 0);
+      FLUSH: IN STD_LOGIC
+      );
     
     END COMPONENT;
 
     --IMPORTING THE EXECUTION UNIT
     COMPONENT ExecutingUnit IS 
       PORT(
-      CARRY_FLAG_OUT, ZERO_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
+      ZERO_FLAG_OUT,CARRY_FLAG_OUT, NEGATIVE_FLAG_OUT: OUT STD_LOGIC;
       WB_IN: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
       MEM_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
       WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
@@ -126,7 +131,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       MEM_SWAP_BIT,WB_SWAP_BIT : STD_LOGIC;
       MEM_SWAP_VALUE,WB_SWAP_VALUE : STD_LOGIC_VECTOR(31 DOWNTO 0);
       MEM_SWAP_ADDRESS,WB_SWAP_ADDRESS:IN std_logic_vector(2 DOWNTO 0);
-      READ1_OUT:OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+      READ1_OUT:OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+      RTI_IN_MEM: IN std_logic
       );
     END COMPONENT;
 
@@ -145,7 +151,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       MEM_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
       FLAGS_OUT: OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
       INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
-      EFFECTIVE_ADDRESS_OUT: OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+      EFFECTIVE_ADDRESS_OUT: OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+      FLUSH: IN STD_LOGIC
       );
     END COMPONENT;
     --IMPORTING MEMORY UNIT
@@ -177,7 +184,8 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
       RESET: IN STD_LOGIC;
       TEST_MEM_ADDRESS_IN, TEST_MEM_DATA_IN: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
       CALL_IN : IN STD_LOGIC;
-      CALL_CLEAR_OUT : OUT STD_LOGIC
+      CALL_CLEAR_OUT,RETI_OUT : OUT STD_LOGIC;
+      StackAddress_OUT : OUT STD_LOGIC_VECTOR(10 DOWNTO 0)
       );
     END COMPONENT;
 
@@ -190,7 +198,9 @@ ARCHITECTURE HARVARD_PROCESSOR_ARCH OF HARVARD_PROCESSOR IS
         INST_0_8_IN: IN STD_LOGIC_VECTOR(8 DOWNTO 0);
         MEMORY_RESULT_OUT, RESULT_OUT, DESTINATION_OUT: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         WB_OUT: OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
-        INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0));
+        INST_0_8_OUT: OUT STD_LOGIC_VECTOR(8 DOWNTO 0);
+        FLUSH: IN STD_LOGIC
+        );
   END COMPONENT;
 
 
@@ -283,12 +293,14 @@ END COMPONENT;
   
 
     --BUFFER RESET/JUMP SIGNAL 
-    SIGNAL RESET_OR_JUMP_OR_CALL, RESET_OR_CALL,JUMP_CALL_BIT : STD_LOGIC; 
+    SIGNAL RESET_OR_JUMP_OR_CALL, RESET_OR_CALL,JUMP_CALL_BIT, RESET_OR_JUMP_OR_CALL_AND_NOT_INT,RESET_OR_CALL_AND_NOT_INT : STD_LOGIC; 
     SIGNAL JUMP_OR_CALL : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
     --SIGNALS EXTRA BTFOK AZMAT FEL MEM
     SIGNAL ZERO_EXTENDER_FLAGS, ZERO_EXTENDER_EFFECTIVE_ADDRESS: STD_LOGIC_VECTOR(31 DOWNTO 0 );
-    SIGNAL CALL_CLEAR : STD_LOGIC;
+    SIGNAL CALL_CLEAR,CHANGE_TO_INTR_WIRE,RETI_OUT_WIRE,HAZARD_OR_RETI : STD_LOGIC;
+    SIGNAL StackAddress_WIRE :  STD_LOGIC_VECTOR(10 DOWNTO 0);
+
     --SIGNALS WRITEBACK
     SIGNAL WB_WRITE_BACK_DATA1_OUT_WIRE, WB_WRITE_BACK_DATA2_OUT_WIRE: STD_LOGIC_VECTOR(31 DOWNTO 0 );
     SIGNAL WB_INST_0_8_OUT_WIRE: STD_LOGIC_VECTOR(8 DOWNTO 0 );
@@ -318,8 +330,8 @@ END COMPONENT;
     CAT_ID_EX_MEM <= (CS_MEM_READ_ENABLE & CS_MEM_INT & CS_MEM_RETI & CS_MEM_Call & CS_MEM_WriteEnableMemory & CS_MEM_Data_Stack & CS_MEM_SPSel) WHEN HAZARD_OUT = '0'
     ELSE "000000000" WHEN HAZARD_OUT = '1';--MEM = (0-2 -> SPSEL) & (3 -> DATA_STACK) & (4 -> WRITE_ENABLE_MEMORY) & (5 -> CALL) & (6 -> RETI) & (7 -> INT) & (8 -> READ ENABLE)
     
-    CAT_ID_EX_EX <= (CS_EX_JC & CS_EX_JN & CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_JZ & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL) WHEN HAZARD_OUT = '0'
-    ELSE "0000000000000" WHEN HAZARD_OUT = '1';--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> BRANCH) & (9 -> REG_IMM) & (10 -> PC_REG)
+    CAT_ID_EX_EX <= (CS_EX_JN & CS_EX_JC & CS_EX_PC_Reg & CS_EX_Reg_IMM & CS_EX_JZ & CS_EX_OUT & CS_EX_Jmp & CS_EX_Set_Clr_Carry & CS_EX_ALU_SEL) WHEN HAZARD_OUT = '0'
+    ELSE "0000000000000" WHEN HAZARD_OUT = '1';--EX = (0-3 -> ALU_SEL) & (4-5 SET_CLR_CARRY) & (6 -> JMP) & (7 -> OUT) & (8 -> JZ) & (9 -> REG_IMM) & (10 -> PC_REG) & (11 -> JC) & (12 -> JN)
 
 
     ZERO_EXTENDER_FLAGS <= X"0000000" & EX_MEM_FLAGS_OUT_WIRE;
@@ -351,25 +363,27 @@ END COMPONENT;
     --THE FETCHING UNIT 
     FETCHING_UNIT: FU_FETCHER PORT MAP (INT_SIGNAL, --INTERUPT SIGNAL ENTERED TO THE WHOLE PROCESSOR
                                           JUMP_CALL_BIT,  --JUMP BIT THAT COMES FROM EX STAGE
-                                          HAZARD_OUT,  --RETI BIT THAT COME FROM RETI UNIT (MISSING LESA MA ET3AMLSH)***&^$^$%^$%^$%%$#@!$#%^%%$#
+                                          HAZARD_OR_RETI,  --RETI BIT THAT COME FROM RETI UNIT (MISSING LESA MA ET3AMLSH)***&^$^$%^$%^$%%$#@!$#%^%%$#
                                           WB_FETCH_MEMORY_OUT_WIRE,  --MEMORY BIT THAT COMES FROM WB STAGE
                                           CLK,  --CLK ENTERED TO WHOLE PROCESSOR
                                           JUMP_OR_CALL, --JUMP LOCATION FROM EX SATGE (MISSING LESA MA ET3AMLSH)***&^$^$%^$%^$%%$#@!$#%^%%$#
                                           WB_WRITE_BACK_DATA1_OUT_WIRE, --MEMORY LOCATION FROM MEM STAGE
                                           IF_ID_INST_IN_WIRE, --FETCHED INSTRUCTION
                                           IF_ID_PC_IN_WIRE,  --CURRENT PC
+                                          CHANGE_TO_INTR_WIRE,
                                           RESET,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
 					                                MEM_WB_MEMORY_RESULT_IN_WIRE  
                                           );    
 
     --THE IF/ID INTERMEDIATE BUFFER
-    IF_ID_BUFFER: BOB_IF_ID PORT MAP (RESET_OR_JUMP_OR_CALL, --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
-                                        HAZARD_OUT, --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
+    IF_ID_BUFFER: BOB_IF_ID PORT MAP (RESET_OR_JUMP_OR_CALL_AND_NOT_INT, --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
+                                        HAZARD_OR_RETI, --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
                                         CLK,   --CLK ENTERED TO WHOLE PROCESSOR
                                         IF_ID_PC_IN_WIRE,  --CURRENT PC FROM FETCHING UNIT
                                         IF_ID_INST_IN_WIRE, --FETCHED INSTRUCTION FROM FETCHING UNIT
                                         IF_ID_INST_OUT_WIRE, --FETCHED INSTRUCTION OUTED WIRE
-                                        IF_ID_PC_OUT_WIRE--CURRENT PC OUTED WIRE                                   
+                                        IF_ID_PC_OUT_WIRE,--CURRENT PC OUTED WIRE                                   
+                                        WB_FETCH_MEMORY_OUT_WIRE
                                         );
 
 -------------------------------------------------------------DECODEING---------------------------------------------
@@ -423,8 +437,8 @@ END COMPONENT;
                                         );
 
     --THE ID/EX INTERMEDIATE BUFFER
-    ID_EX_BUFFER: BOB_ID_EX PORT MAP (RESET_OR_JUMP_OR_CALL,
-                                        '0',
+    ID_EX_BUFFER: BOB_ID_EX PORT MAP (RESET_OR_JUMP_OR_CALL_AND_NOT_INT,
+                                        RETI_OUT_WIRE,
                                         CLK,
                                         ID_EX_PC_IN_WIRE, 
                                         ID_EX_INST_IN_WIRE, 
@@ -443,14 +457,15 @@ END COMPONENT;
                                         ID_EX_INST_OUT_WIRE, 
                                         ID_EX_PC_OUT_WIRE, 
                                         ID_EX_Read1_OUT_WIRE, 
-                                        ID_EX_Read2_OUT_WIRE
+                                        ID_EX_Read2_OUT_WIRE,
+                                        WB_FETCH_MEMORY_OUT_WIRE
                                         );
                                         
 -------------------------------------------------------------EXECUTING---------------------------------------------
 
     --THE EXECUTING UNIT
-    EXECUTION_UNIT: ExecutingUnit PORT MAP ( CARRY_FLAG, 
-                                              ZERO_FLAG, 
+    EXECUTION_UNIT: ExecutingUnit PORT MAP (  ZERO_FLAG, 
+                                              CARRY_FLAG,
                                               NEGATIVE_FLAG,
                                               ID_EX_WB_OUT_WIRE,
                                               ID_EX_MEM_OUT_WIRE,
@@ -500,12 +515,13 @@ END COMPONENT;
                                               MEM_WB_DESTINATION_OUT_WIRE,
                                               EX_MEM_INST_0_8_OUT_WIRE(8 DOWNTO 6),
                                               MEM_WB_INST_0_8_OUT_WIRE(8 DOWNTO 6),
-                                              EX_MEM_READ1_IN_WIRE
+                                              EX_MEM_READ1_IN_WIRE,
+                                              RETI_OUT_WIRE
                                               );
 
     --THE EX/MEM INTERMEDIATE BUFFER
-    EX_MEM_BUFFER: BOB_EX_MEM PORT MAP ( RESET_OR_CALL,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
-                                          '0',    --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
+    EX_MEM_BUFFER: BOB_EX_MEM PORT MAP ( RESET_OR_CALL_AND_NOT_INT,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
+                                          RETI_OUT_WIRE,    --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
                                           CLK,     --CLK ENTERED TO WHOLE PROCESSOR
                                           EX_MEM_RESULT_IN_WIRE, 
                                           EX_MEM_DESTINATION_IN_WIRE,
@@ -522,12 +538,13 @@ END COMPONENT;
                                           EX_MEM_MEM_OUT_WIRE,
                                           EX_MEM_FLAGS_OUT_WIRE,
                                           EX_MEM_INST_0_8_OUT_WIRE,
-                                          EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE
+                                          EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE,
+                                          WB_FETCH_MEMORY_OUT_WIRE
                                           );
 
 -------------------------------------------------------------MEMORY---------------------------------------------
 
-    MEMORY_UNITT: Memory_unit PORT MAP ('0',
+    MEMORY_UNITT: Memory_unit PORT MAP (EX_MEM_MEM_OUT_WIRE(6),
                                         CLK,
                                         EX_MEM_MEM_OUT_WIRE(4),				-- Write enable of the memory
                                         EX_MEM_MEM_OUT_WIRE(3),				-- selector of Address
@@ -554,7 +571,9 @@ END COMPONENT;
                                         DATA_MEM_ADDRESS_TEST,
                                         DATA_MEM_IN_TEST,
                                         EX_MEM_MEM_OUT_WIRE(5),
-                                        CALL_CLEAR
+                                        CALL_CLEAR,
+                                        RETI_OUT_WIRE,
+                                        StackAddress_WIRE
                                         );
 
     --THE EX/MEM INTERMEDIATE BUFFER
@@ -570,7 +589,8 @@ END COMPONENT;
                                           MEM_WB_RESULT_OUT_WIRE, 
                                           MEM_WB_DESTINATION_OUT_WIRE,
                                           MEM_WB_WB_OUT_WIRE,
-                                          MEM_WB_INST_0_8_OUT_WIRE
+                                          MEM_WB_INST_0_8_OUT_WIRE,
+                                          '0'
 				                                   );
 -------------------------------------------------------------WRITE_BACK---------------------------------------------
 
@@ -600,6 +620,7 @@ WRITEBACK_UNITT: WriteBack PORT MAP (  MEM_WB_RESULT_OUT_WIRE,
   RESET_OR_CALL <= '1' WHEN RESET = '1' OR CALL_CLEAR = '1'
   ELSE '0';
   
+
   RESET_OR_JUMP_OR_CALL <= '1' WHEN RESET = '1' OR JUMP_BIT_OUT_WIRE = '1' OR CALL_CLEAR = '1'
   ELSE '0';
 
@@ -607,6 +628,14 @@ WRITEBACK_UNITT: WriteBack PORT MAP (  MEM_WB_RESULT_OUT_WIRE,
   ELSE '0';
 
 
+  RESET_OR_JUMP_OR_CALL_AND_NOT_INT <= '1' WHEN RESET_OR_JUMP_OR_CALL = '1' AND CHANGE_TO_INTR_WIRE /= '1'
+  ELSE '0';
+
+  RESET_OR_CALL_AND_NOT_INT <= '1' WHEN RESET_OR_CALL = '1' AND CHANGE_TO_INTR_WIRE /= '1'
+  ELSE '0';
+
+  HAZARD_OR_RETI <= '0' WHEN HAZARD_OUT = '0' AND RETI_OUT_WIRE = '0'
+  ELSE '1';
 
   PROCESS(CLK,EX_MEM_READ1_OUT_WIRE,JUMP_LOCTION_EX_OUT)
     BEGIN
@@ -619,6 +648,7 @@ WRITEBACK_UNITT: WriteBack PORT MAP (  MEM_WB_RESULT_OUT_WIRE,
         JUMP_OR_CALL <= JUMP_LOCTION_EX_OUT;
       END IF;
     END IF;
+
       END PROCESS;
 
     END HARVARD_PROCESSOR_ARCH;
