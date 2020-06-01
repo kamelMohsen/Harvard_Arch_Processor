@@ -560,7 +560,7 @@ BEGIN
 				ALU_Selc <= "0000";
 			--======Memory=====--
 				Data_Stack <= '1';
-				SPSel <=  "100";
+				SPSel <=  "010";
 				ReadEnable <= '0';
 				WriteEnableMemory <= '0';
 				Call <= '0';
@@ -794,6 +794,91 @@ BEGIN
 				INN <= '0';
 				RegPC_MemPC <= '0';
 			END IF;
+--=========================================================================================--
+		ELSIF (Instruction(15 DOWNTO 12)="0111") THEN
+			IF(Instruction(11 DOWNTO 9)="000") THEN
+			--=====Decoder=======--
+				Rdst_Rsrc1 <= '0';
+				Rdst_Rsrc2 <= '0';
+			--=======Execute=====--
+				Jmp <= '0';
+				OUTT <= '0';
+				JZ_OUT <= '0';
+				JN_OUT <= '0';
+				JC_OUT <= '0';
+				Set_Clr_Carry <= "00";
+				Reg_IMM <= '0';
+				PC_Reg <= '0';
+				ALU_Selc <= "0000";
+			--======Memory=====--
+				Data_Stack <= '1';
+				SPSel <=  "001";
+				ReadEnable <= '0';
+				WriteEnableMemory <= '1';
+				Call <= '0';
+				RETI <= '0';
+				INT <= '1';
+			--=====WriteBack====--
+				Result_Mem <= '0';
+				WriteEnableWB <= "00";
+				INN <= '0';
+				RegPC_MemPC <= '0';
+
+			ELSIF(Instruction(11 DOWNTO 9)="001") THEN
+			--=====Decoder=======--
+				Rdst_Rsrc1 <= '0';
+				Rdst_Rsrc2 <= '0';
+			--=======Execute=====--
+				Jmp <= '0';
+				OUTT <= '0';
+				JZ_OUT <= '0';
+				JN_OUT <= '0';
+				JC_OUT <= '0';
+				Set_Clr_Carry <= "00";
+				Reg_IMM <= '0';
+				PC_Reg <= '0';
+				ALU_Selc <= "0000";
+			--======Memory=====--
+				Data_Stack <= '0';
+				SPSel <=  "111";
+				ReadEnable <= '0';
+				WriteEnableMemory <= '0';
+				Call <= '0';
+				RETI <= '0';
+				INT <= '0';
+			--=====WriteBack====--
+				Result_Mem <= '1';
+				WriteEnableWB <= "00";
+				INN <= '0';
+				RegPC_MemPC <= '1';
+			ELSIF(Instruction(11 DOWNTO 9)="010") THEN
+			--=====Decoder=======--
+				Rdst_Rsrc1 <= '0';
+				Rdst_Rsrc2 <= '0';
+			--=======Execute=====--
+				Jmp <= '0';
+				OUTT <= '0';
+				JZ_OUT <= '0';
+				JN_OUT <= '0';
+				JC_OUT <= '0';
+				Set_Clr_Carry <= "00";
+				Reg_IMM <= '0';
+				PC_Reg <= '0';
+				ALU_Selc <= "0011";
+			--======Memory=====--
+				Data_Stack <= '1';
+				SPSel <=  "001";
+				ReadEnable <= '0';
+				WriteEnableMemory <= '1';
+				Call <= '0';
+				RETI <= '0';
+				INT <= '0';
+			--=====WriteBack====--
+				Result_Mem <= '0';
+				WriteEnableWB <= "00";
+				INN <= '0';
+				RegPC_MemPC <= '0';
+				END IF;
 
 		END IF;
 	END PROCESS;

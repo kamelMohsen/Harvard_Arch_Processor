@@ -22,7 +22,7 @@ END ENTITY FU_INT_UNIT;
 --THEN AFTER THAT IT WILL PRODUCE THE CUSTOM INSTRUCTION TO PUSH PC
 
 ARCHITECTURE FU_INT_UNIT_ARCH OF FU_INT_UNIT IS
-	SIGNAL Count : INTEGER RANGE 0 TO 7;
+	SIGNAL Count : INTEGER RANGE 0 TO 9;
 
 BEGIN	
 	
@@ -33,40 +33,40 @@ BEGIN
 		IF FALLING_EDGE(clk) THEN
 			
 			IF INT_SIG = '1' OR NOT (Count = 0) THEN 
-				IF Count = 7 THEN 
-					Count <= 0; 
-				END IF;
 				IF Count = 0 THEN
 					Count <= Count + 1;
+					Instruction <= X"00000000";
 					Change_to_INT_Commands <= '1';
-					Instruction <= (others => '0');
-				ELSIF Count = 1 THEN	
+				ELSIF Count = 1 THEN
 					Count <= Count + 1;
-					Instruction <= (others => '0');
-				ELSIF Count = 2 THEN	
+					Instruction <= X"00000000";
+				ELSIF Count = 2 THEN
 					Count <= Count + 1;
-					Instruction <= (others => '0');
+					Instruction <= X"00000000";
 				ELSIF Count = 3 THEN	
 					Count <= Count + 1;
-					Instruction <= (others => '0');
+					Instruction <=  X"0000" & "0111010000000000";
 				ELSIF Count = 4 THEN	
 					Count <= Count + 1;
-					Instruction <= (others => '0');
-				ELSIF Count = 5 THEN	
+					Instruction <= X"0000" & "0111000000000000";
+				elsif  Count = 5 THEN
 					Count <= Count + 1;
-					Instruction <= (others => '0');
-				ELSIF Count = 6 THEN	
+					Instruction <= X"0000" & "0111001000000000";	
+				ELSIF Count = 6 then 
 					Count <= Count + 1;
-					Instruction <= (others => '0');
-				ELSIF Count = 7 THEN	
-					Instruction <= X"00000001" ;
+					Instruction <= X"00000000";
+				ELSIF Count = 7 then 
+					Count <= Count + 1;
+					Instruction <= X"00000000";
+				ELSIF Count = 8 then 
+					Count <= Count + 1;
+					Instruction <= X"00000000";
 
 				END IF;
-				IF Count = 7 THEN
+				IF Count = 9 then 
 					Count <= 0;
 				END IF;
 			END IF;
-
 			IF INT_SIG = '0' AND Count = 0 THEN
 				Change_to_INT_Commands <= '0';
 			END IF;		
