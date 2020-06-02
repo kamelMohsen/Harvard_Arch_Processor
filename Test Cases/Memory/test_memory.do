@@ -19,8 +19,8 @@ sim:/harvard_processor/ZERO_FLAG
 force -freeze sim:/harvard_processor/RESET 1 0
 force -freeze sim:/harvard_processor/INT_SIGNAL 0 0
 force -freeze sim:/harvard_processor/CLK 1 0, 0 {50 ns} -r 100
-mem load -i {F:/Tech/CUFE_CHS/Spring 2020/Architecture/Project/Harvard_Arch_Processor/TestCases/Memory/MemoryData.mem} /harvard_processor/MEMORY_UNITT/Memory/ram
-mem load -i {F:/Tech/CUFE_CHS/Spring 2020/Architecture/Project/Harvard_Arch_Processor/TestCases/Memory/MemoryInstruction.mem} /harvard_processor/FETCHING_UNIT/INST_MEM/ram
+mem load -i {F:/Tech/CUFE_CHS/Spring 2020/Architecture/Project/Harvard_Arch_Processor/Test Cases/Memory/MemoryData.mem} /harvard_processor/MEMORY_UNITT/Memory/ram
+mem load -i {F:/Tech/CUFE_CHS/Spring 2020/Architecture/Project/Harvard_Arch_Processor/Test Cases/Memory/MemoryInstruction.mem} /harvard_processor/FETCHING_UNIT/INST_MEM/ram
 run
 force -freeze sim:/harvard_processor/RESET 0 0
 run 

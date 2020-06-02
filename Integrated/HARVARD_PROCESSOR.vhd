@@ -376,14 +376,14 @@ END COMPONENT;
                                           );    
 
     --THE IF/ID INTERMEDIATE BUFFER
-    IF_ID_BUFFER: BOB_IF_ID PORT MAP (RESET_OR_JUMP_OR_CALL_AND_NOT_INT, --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
+    IF_ID_BUFFER: BOB_IF_ID PORT MAP (RESET, --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
                                         HAZARD_OR_RETI, --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
                                         CLK,   --CLK ENTERED TO WHOLE PROCESSOR
                                         IF_ID_PC_IN_WIRE,  --CURRENT PC FROM FETCHING UNIT
                                         IF_ID_INST_IN_WIRE, --FETCHED INSTRUCTION FROM FETCHING UNIT
                                         IF_ID_INST_OUT_WIRE, --FETCHED INSTRUCTION OUTED WIRE
                                         IF_ID_PC_OUT_WIRE,--CURRENT PC OUTED WIRE                                   
-                                        WB_FETCH_MEMORY_OUT_WIRE
+                                        '0'
                                         );
 
 -------------------------------------------------------------DECODEING---------------------------------------------
@@ -437,7 +437,7 @@ END COMPONENT;
                                         );
 
     --THE ID/EX INTERMEDIATE BUFFER
-    ID_EX_BUFFER: BOB_ID_EX PORT MAP (RESET_OR_JUMP_OR_CALL_AND_NOT_INT,
+    ID_EX_BUFFER: BOB_ID_EX PORT MAP (RESET,
                                         RETI_OUT_WIRE,
                                         CLK,
                                         ID_EX_PC_IN_WIRE, 
@@ -458,7 +458,7 @@ END COMPONENT;
                                         ID_EX_PC_OUT_WIRE, 
                                         ID_EX_Read1_OUT_WIRE, 
                                         ID_EX_Read2_OUT_WIRE,
-                                        WB_FETCH_MEMORY_OUT_WIRE
+                                        '0'
                                         );
                                         
 -------------------------------------------------------------EXECUTING---------------------------------------------
@@ -520,7 +520,7 @@ END COMPONENT;
                                               );
 
     --THE EX/MEM INTERMEDIATE BUFFER
-    EX_MEM_BUFFER: BOB_EX_MEM PORT MAP ( RESET_OR_CALL_AND_NOT_INT,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
+    EX_MEM_BUFFER: BOB_EX_MEM PORT MAP ( RESET,   --RESET SIGNAL ENTERED TO THE WHOLE PROCESSOR
                                           RETI_OUT_WIRE,    --STALL SIGNAL FROM MANY SOURCES***&^$^$%^$%^$%%$#@!$#%^%%$#
                                           CLK,     --CLK ENTERED TO WHOLE PROCESSOR
                                           EX_MEM_RESULT_IN_WIRE, 
@@ -539,7 +539,7 @@ END COMPONENT;
                                           EX_MEM_FLAGS_OUT_WIRE,
                                           EX_MEM_INST_0_8_OUT_WIRE,
                                           EX_MEM_EFFECTIVE_ADDRESS_OUT_WIRE,
-                                          WB_FETCH_MEMORY_OUT_WIRE
+                                          '0'
                                           );
 
 -------------------------------------------------------------MEMORY---------------------------------------------
